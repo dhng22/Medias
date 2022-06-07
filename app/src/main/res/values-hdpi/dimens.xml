@@ -1,0 +1,13 @@
+<resources>
+    <dimen name="song_row_padding">5.2dp</dimen>
+	<dimen name="img_song_size">39.4dp</dimen>
+	<dimen name="img_song_corner">5.5dp</dimen>
+	<dimen name="img_album_size">10.9dp</dimen>
+	<dimen name="img_album_margin_start">3.1dp</dimen>
+	<dimen name="txt_title_margin">2.2dp</dimen>
+	<dimen name="txt_title_size">8sp</dimen>
+	<dimen name="txt_song_desc_size">5.2sp</dimen>
+	<dimen name="txt_song_dur_size">6sp</dimen>
+	<dimen name="bottom_item_size">16.6dp</dimen>
+	<dimen name="nav_corner">11.4dp</dimen>
+</resources>

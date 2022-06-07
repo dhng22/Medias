@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_coordinate_parent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MusicFragment">
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/musicUtils"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:stateListAnimator="@null"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/rail_bold"
+                android:text="| Listen to your music aesthetically"
+                android:textColor="@color/black"
+                android:textSize="23sp"
+
+                app:layout_constraintEnd_toStartOf="@+id/guideline10"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintGuide_begin="203dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:clipToPadding="false"
+            android:paddingBottom="1dp">
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="@dimen/nav_corner"
+                app:cardElevation="1dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stateListAnimator="@null"
+                    app:layout_scrollFlags="noScroll|enterAlways">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="12dp"
+                        android:clipToPadding="false"
+                        android:paddingStart="12dp"
+                        android:paddingTop="12dp"
+                        android:paddingEnd="12dp">
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/searchViewWrapper"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center_horizontal"
+                            android:theme="@style/Theme.MaterialComponents.Light"
+                            app:cardCornerRadius="@dimen/nav_corner"
+                            app:cardElevation="8dp">
+
+                            <androidx.appcompat.widget.SearchView
+                                android:id="@+id/searchView"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/search_bar"
+                                android:foregroundTint="@color/black"
+                                android:layoutDirection="rtl"
+                                app:iconifiedByDefault="false"
+                                app:queryBackground="@color/white"
+                                app:queryHint="Search for song" />
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/utils_corner"
+                            app:cardElevation="13dp"
+                            app:layout_constraintDimensionRatio="H, 1.2:1"
+                            app:layout_constraintEnd_toStartOf="@+id/btnPlayListWrapper"
+                            app:layout_constraintStart_toStartOf="@id/searchViewWrapper"
+                            app:layout_constraintTop_toTopOf="@+id/btnPlayListWrapper">
+
+                            <Button
+                                android:id="@+id/btnFav"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:backgroundTint="@color/black"
+                                android:drawableTop="@drawable/ic_fav"
+                                android:drawableTint="@color/white"
+                                android:paddingVertical="9dp"
+                                android:scaleX="1.2"
+                                android:scaleY="1.2"
+                                android:text="Favorite"
+                                android:textSize="9sp" />
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/btnPlayListWrapper"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_marginTop="22dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/utils_corner"
+                            app:cardElevation="13dp"
+                            app:layout_constraintDimensionRatio="H, 1.2:1"
+                            app:layout_constraintEnd_toEndOf="@+id/searchViewWrapper"
+                            app:layout_constraintStart_toStartOf="@id/searchViewWrapper"
+                            app:layout_constraintTop_toBottomOf="@id/searchViewWrapper">
+
+                            <Button
+                                android:id="@+id/btnPlaylist"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:backgroundTint="@color/black"
+                                android:drawableTop="@drawable/ic_playlist"
+                                android:drawableTint="@color/white"
+                                android:paddingVertical="9dp"
+                                android:scaleX="1.2"
+                                android:scaleY="1.2"
+                                android:text="Playlist"
+                                android:textSize="9sp" />
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            app:cardBackgroundColor="@color/white"
+                            app:cardCornerRadius="@dimen/utils_corner"
+                            app:cardElevation="13dp"
+                            app:layout_constraintDimensionRatio="H, 1.2:1"
+                            app:layout_constraintEnd_toEndOf="@+id/searchViewWrapper"
+                            app:layout_constraintStart_toEndOf="@+id/btnPlayListWrapper"
+                            app:layout_constraintTop_toTopOf="@+id/btnPlayListWrapper">
+
+                            <Button
+                                android:id="@+id/btnRecent"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:backgroundTint="@color/black"
+                                android:drawableTop="@drawable/ic_recent"
+                                android:drawableTint="@color/white"
+                                android:paddingVertical="9dp"
+                                android:scaleX="1.2"
+                                android:scaleY="1.2"
+                                android:text="Recent"
+                                android:textSize="9sp" />
+                        </androidx.cardview.widget.CardView>
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="@font/rail_semi_bold"
+                            android:text="• Local Song "
+                            android:textColor="@color/black"
+                            android:textSize="20dp"
+                            app:flow_verticalBias="1"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/btnPlayListWrapper"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.appbar.CollapsingToolbarLayout>
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:src="@drawable/corner_card"
+                android:translationZ="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/songList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_anchor="@id/musicUtils"
+        app:layout_anchorGravity="bottom"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/musicUtils"
+        tools:listitem="@layout/row_song" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
