@@ -1,18 +1,24 @@
 package com.example.music;
 
+import android.animation.ObjectAnimator;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Icon;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -20,7 +26,7 @@ import androidx.core.graphics.drawable.IconCompat;
 
 import java.util.ArrayList;
 
-public class PlaySongService extends Service {
+public class PlaySongService extends Service{
     public static final int PLAYING_SONG_ID = 221;
     public static final int ACTION_PLAY_PAUSE = 11;
     public static final int ACTION_NEXT = 12;
@@ -31,26 +37,32 @@ public class PlaySongService extends Service {
     public static final int MODE_NO_REPEAT = 0;
 
     public static int currentSongIndex;
-    Song currentSong;
+    static Song currentSong;
     public static MediaPlayer mediaPlayer;
     public static ArrayList<Song> songList;
     public static OnNewSongSelectedListener newSongSelectedListener;
-    Notification notification;
+    public static Notification songNotification;
     NotificationCompat.Action actionPrevCompat, actionNextCompat, actionPlayPauseCompat, actionStopCompat;
-    Notification.Action  actionPlayPause;
+    public static Notification.Action  actionPlay, actionPause;
     PendingIntent pendingPrev, pendingNext, pendingPlayPause, pendingStop;
     SharedPreferences sharedPreferences;
+    static SharedPreferences.Editor editor;
     int repeatMode;
 
     IconCompat icPrevCompat, icNextCompat, icPlayCompat, icPauseCompat, icStopCompat;
     Icon icPlay, icPause;
-
+    public static PlaybackStateCompat playbackState;
+    public static MediaSessionCompat mediaSession;
+    static Handler updateSeekBar;
+    static ObjectAnimator animIncreaseSeekBar;
     @Override
     public void onCreate() {
         super.onCreate();
         initActions();
         sharedPreferences = getSharedPreferences("appdata", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         repeatMode = sharedPreferences.getInt("repeatMode", MODE_NO_REPEAT);
+        updateSeekBar = new Handler();
     }
 
     private void initActions() {
@@ -61,7 +73,8 @@ public class PlaySongService extends Service {
         actionPlayPauseCompat = new NotificationCompat.Action.Builder(icPauseCompat, "Pause", pendingPlayPause).build();
         actionStopCompat = new NotificationCompat.Action.Builder(icStopCompat, "Stop", pendingStop).build();
 
-        actionPlayPause = new Notification.Action.Builder(icPause, "Pause", pendingPlayPause).build();
+        actionPause = new Notification.Action.Builder(icPause, "Pause", pendingPlayPause).build();
+        actionPlay = new Notification.Action.Builder(icPlay, "Play", pendingPlayPause).build();
     }
     private void initIntent() {
         Intent intentPrev = new Intent(this, MusicActionReceiver.class);
@@ -102,64 +115,96 @@ public class PlaySongService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int action = intent.getIntExtra("action", -1);
-        if (mediaPlayer == null) {
+        if (sharedPreferences.getInt("currentDur", -1) > 0 && mediaPlayer == null) {
             currentSong = songList.get(currentSongIndex);
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
-
-            MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
-                    .putLong(MediaMetadata.METADATA_KEY_DURATION, currentSong.duration)
-                    .putString(MediaMetadata.METADATA_KEY_TITLE, currentSong.songName).build();
-            PlaybackStateCompat playbackState = new PlaybackStateCompat.Builder()
-                    .setState(PlaybackStateCompat.STATE_PLAYING, mediaPlayer.getCurrentPosition(), 1)
-                    .setActions(PlaybackStateCompat.ACTION_SEEK_TO).build();
-
-            MediaSessionCompat mediaSession = new MediaSessionCompat(this, "current_session");
-            mediaSession.setActive(true);
-            mediaSession.setMetadata(metadata);
-            mediaSession.setPlaybackState(playbackState);
+            mediaPlayer.seekTo(sharedPreferences.getInt("currentDur", -1));
 
 
-            androidx.media.app.NotificationCompat.MediaStyle mediaStyle = new androidx.media.app.NotificationCompat.MediaStyle();
-            mediaStyle.setMediaSession(mediaSession.getSessionToken());
+            editor.putInt("currentDur", -1);
+            editor.commit();
 
-            notification = new NotificationCompat.Builder(this, MyApplication.PLAYING_SONG_CHANNEL_ID)
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setLargeIcon(currentSong.songImage)
-                    .setContentTitle(currentSong.songName)
-                    .setContentText(currentSong.singer)
-                    .addAction(actionPrevCompat)
-                    .addAction(actionPlayPauseCompat)
-                    .addAction(actionNextCompat)
-                    .addAction(actionStopCompat)
-                    .setStyle(mediaStyle).build();
-
-            startSong();
+            initNotification();
+            startSong(getApplicationContext());
 
             mediaPlayer.setOnCompletionListener(mp -> {
                 if (repeatMode == MODE_REPEAT_ONE) {
                     mediaPlayer.start();
                 } else {
-                    nextSongAutomatically();
+                    nextSongAutomatically(getApplicationContext());
                 }
             });
+            updateNavigationSeekBarListener();
+        } else if (mediaPlayer == null && sharedPreferences.getInt("currentDur", -1) < 0) {
+            currentSong = songList.get(currentSongIndex);
+            mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
+
+
+            initNotification();
+            startSong(getApplicationContext());
+
+            mediaPlayer.setOnCompletionListener(mp -> {
+                if (repeatMode == MODE_REPEAT_ONE) {
+                    mediaPlayer.start();
+                } else {
+                    nextSongAutomatically(getApplicationContext());
+                }
+            });
+            updateNavigationSeekBarListener();
         }
 
         handleEvent(action);
 
-        startForeground(PLAYING_SONG_ID,notification);
+        startForeground(PLAYING_SONG_ID, songNotification);
         return START_NOT_STICKY;
+    }
+
+    private void initNotification() {
+        MediaMetadataCompat metadata = new MediaMetadataCompat.Builder()
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, currentSong.duration)
+                .putString(MediaMetadata.METADATA_KEY_TITLE, currentSong.songName).build();
+        playbackState = getPlayBackState(mediaPlayer.isPlaying());
+
+        OnNotificationSeekBarChange notificationSeekBarChange = new OnNotificationSeekBarChange();
+
+        mediaSession = new MediaSessionCompat(this, "current_session");
+        mediaSession.setActive(true);
+        mediaSession.setMetadata(metadata);
+        mediaSession.setPlaybackState(getPlayBackState(mediaPlayer.isPlaying()));
+        mediaSession.setCallback(notificationSeekBarChange);
+
+        androidx.media.app.NotificationCompat.MediaStyle mediaStyle = new androidx.media.app.NotificationCompat.MediaStyle();
+        mediaStyle.setMediaSession(mediaSession.getSessionToken());
+
+        songNotification = new NotificationCompat.Builder(this, MyApplication.PLAYING_SONG_CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setLargeIcon(currentSong.songImage)
+                .setContentTitle(currentSong.songName)
+                .setContentText(currentSong.singer)
+                .addAction(actionPrevCompat)
+                .addAction(actionPlayPauseCompat)
+                .addAction(actionNextCompat)
+                .addAction(actionStopCompat)
+                .setStyle(mediaStyle).build();
+
+    }
+
+    private static PlaybackStateCompat getPlayBackState(boolean playing) {
+        return new PlaybackStateCompat.Builder()
+                .setState(!playing? PlaybackStateCompat.STATE_PLAYING:PlaybackStateCompat.STATE_PAUSED, mediaPlayer.getCurrentPosition(), 1, SystemClock.elapsedRealtime())
+                .setActions(PlaybackStateCompat.ACTION_SEEK_TO).build();
     }
 
     private void handleEvent(int action) {
         switch (action) {
             case ACTION_PREV:
-                prevSong();
+                prevSong(getApplicationContext());
                 break;
             case ACTION_PLAY_PAUSE:
-                playPause();
+                playPause(getApplicationContext());
                 break;
             case ACTION_NEXT:
-                nextSong();
+                nextSong(getApplicationContext());
                 break;
             case ACTION_STOP:
                 stopSongService();
@@ -167,94 +212,137 @@ public class PlaySongService extends Service {
         }
     }
 
-    private void prevSong() {
+    public static void prevSong(Context context) {
         currentSong.isCurrentItem = false;
+        editor.putInt("currentDur", -1);
+        editor.commit();
         if (currentSongIndex == 0) {
             int newSongIndex = songList.size() - 2;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
             currentSongIndex = newSongIndex;
-            renewSong();
+            renewSong(context);
         } else if (currentSongIndex > 0) {
             int newSongIndex = currentSongIndex - 1;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
             currentSongIndex = newSongIndex;
-            renewSong();
+            renewSong(context);
         }
     }
 
-    private void playPause() {
+    public static void playPause(Context context) {
         if (mediaPlayer.isPlaying()) {
-            pauseSong();
+            pauseSong(context);
         } else {
-            startSong();
+            startSong(context);
         }
+        newSongSelectedListener.setBackGroundForNewSong(-1,currentSongIndex);
     }
 
-    private void pauseSong() {
+    public static void pauseSong(Context context) {
         if (mediaPlayer.isPlaying()) {
-            actionPlayPause = new Notification.Action.Builder(icPlay, "Play", pendingPlayPause).build();
-            notification.actions[1] = actionPlayPause;
+            editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
+            editor.commit();
+            songNotification.actions[1] = actionPlay;
         }
+        changeNotificationSeekBarState(context);
         mediaPlayer.pause();
     }
 
 
-    private void startSong() {
+    public static void startSong(Context context) {
         if (!mediaPlayer.isPlaying()) {
-            actionPlayPause= new Notification.Action.Builder(icPause, "Pause", pendingPlayPause).build();
-            notification.actions[1] = actionPlayPause;
+            songNotification.actions[1] = actionPause;
         }
+        changeNotificationSeekBarState(context);
         mediaPlayer.start();
+        updateNavigationSeekBarListener();
     }
 
-    private void nextSong() {
+    private static void nextSong(Context context) {
         currentSong.isCurrentItem = false;
+        editor.putInt("currentDur", -1);
+        editor.commit();
         if (currentSongIndex == songList.size()-2) {
             int newSongIndex = 0;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
             currentSongIndex = newSongIndex;
-            renewSong();
+            renewSong(context);
         } else if (currentSongIndex < songList.size() - 2) {
             int newSongIndex = currentSongIndex + 1;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
             currentSongIndex = newSongIndex;
-            renewSong();
+            renewSong(context);
         }
     }
 
-    private void nextSongAutomatically() {
+    private void nextSongAutomatically(Context context) {
         currentSong.isCurrentItem = false;
+        editor.putInt("currentDur", -1);
+        editor.commit();
         if (currentSongIndex < songList.size() - 2) {
             int newSongIndex = currentSongIndex + 1;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
             currentSongIndex = newSongIndex;
-            renewSong();
+            renewSong(context);
         } else if (currentSongIndex == songList.size() - 2 ) {
             if (repeatMode==MODE_REPEAT_PLAYLIST) {
                 int newSongIndex = 0;
                 newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
                 currentSongIndex = newSongIndex;
-                renewSong();
+                renewSong(context);
             } else if (repeatMode==MODE_NO_REPEAT) {
                 mediaPlayer.release();
                 mediaPlayer = null;
+                updateNavigationSeekBarListener();
             }
         }
     }
 
     private void stopSongService() {
         if (mediaPlayer != null) {
+            editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
+            editor.commit();
+            mediaPlayer.pause();
+            newSongSelectedListener.setBackGroundForNewSong(-1, currentSongIndex);
             mediaPlayer.release();
             mediaPlayer = null;
+            updateNavigationSeekBarListener();
         }
         stopSelf();
     }
 
-    private void renewSong() {
+    private static void renewSong(Context context) {
         mediaPlayer.release();
         mediaPlayer = null;
-        Intent intent = new Intent(this, PlaySongService.class);
-        getApplicationContext().startService(intent);
+        Intent intent = new Intent(context, PlaySongService.class);
+        context.startService(intent);
+    }
+
+    private static void changeNotificationSeekBarState(Context baseContext) {
+        playbackState = getPlayBackState(mediaPlayer.isPlaying());
+        mediaSession.setPlaybackState(playbackState);
+        Intent intent = new Intent(baseContext, PlaySongService.class);
+        baseContext.startService(intent);
+    }
+
+    public static void updateNavigationSeekBarListener() {
+        MainActivity.songProgress.setMax(mediaPlayer.getDuration());
+        updateSeekBar.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    animIncreaseSeekBar = ObjectAnimator.ofInt(MainActivity.songProgress,
+                            "progress",
+                            MainActivity.songProgress.getProgress(), mediaPlayer.getCurrentPosition()).setDuration(300);
+                    if (!animIncreaseSeekBar.isRunning()) {
+                        animIncreaseSeekBar.start();
+                        updateSeekBar.postDelayed(this, 200);
+                    }
+                } else {
+                    updateSeekBar.removeCallbacks(this);
+                }
+            }
+        }, 200);
     }
 
     @Override

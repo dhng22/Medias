@@ -11,13 +11,14 @@ import java.io.Serializable;
 public class Song implements Serializable , Comparable<Song>{
     long date, duration;
     boolean lastSong, isCurrentItem;
-    public static Context context;
+    public Context context;
     String songName, albumName, singer, path, txtDuration;
     Bitmap songImage;
     private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
-    public Song(String uri, boolean lastSong) {
+    public Song(String uri, boolean lastSong, Context context) {
         isCurrentItem = false;
+        this.context = context;
         this.lastSong = lastSong;
         path = uri;
         retriever.setDataSource(uri);

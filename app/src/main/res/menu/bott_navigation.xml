@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
-        <item android:title="Music"
-            android:id="@+id/btnMusicTab"
-            android:icon="@drawable/ic_music_note"
-            app:showAsAction="always" />
         <item
             android:title="Video"
             android:id="@+id/btnVideoTab"
             android:icon="@drawable/ic_video"
+            app:showAsAction="always" />
+        <item android:title="Music"
+            android:id="@+id/btnMusicTab"
+            android:icon="@drawable/ic_music_note"
             app:showAsAction="always" />
         <item android:title="Favorite"
             android:id="@+id/btnFavTab"

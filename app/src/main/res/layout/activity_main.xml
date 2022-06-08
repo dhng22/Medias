@@ -95,6 +95,7 @@
             app:layout_constraintStart_toStartOf="@+id/guideline7"
             app:layout_constraintTop_toTopOf="@+id/guideline6">
             <com.google.android.material.bottomnavigation.BottomNavigationView
+
                 android:id="@+id/bottomNav"
                 android:layout_width="match_parent"
                 app:itemRippleColor="@null"
@@ -107,4 +108,40 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:menu="@menu/bott_navigation" />
         </androidx.cardview.widget.CardView>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/musicNavControl"
+            android:elevation="15dp"
+            android:layout_width="0dp"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomNavWrapper"
+            app:layout_constraintEnd_toEndOf="@+id/bottomNavWrapper"
+            app:layout_constraintStart_toStartOf="@+id/bottomNavWrapper"
+            app:layout_constraintTop_toTopOf="@+id/bottomNavWrapper"
+            android:layout_height="0dp">
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideLine11"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ProgressBar
+                    android:rotation="-90"
+                    android:rotationY="180"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:id="@+id/songProgress"
+                    android:progressDrawable="@drawable/circular_progress"
+                    android:layout_width="54dp"
+                    android:layout_height="54dp"
+                    android:background="@android:color/transparent"
+                    android:indeterminate="false"
+                    android:indeterminateOnly="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideLine11"
+                    app:layout_constraintStart_toStartOf="@+id/guideLine11"
+                    app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

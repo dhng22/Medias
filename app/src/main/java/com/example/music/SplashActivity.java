@@ -102,7 +102,6 @@ public class SplashActivity extends AppCompatActivity {
         retrieveMusicService = new Intent(this, RetrieveMusicService.class);
         retrieveMusicService.putExtra("musics", musics);
 
-        Song.context = this;
         broadcastManager = LocalBroadcastManager.getInstance(this);
         musicReceiver = new BroadcastReceiver() {
             @Override

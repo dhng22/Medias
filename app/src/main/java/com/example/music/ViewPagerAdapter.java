@@ -15,11 +15,11 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch (position) {
             default:
-                return new MusicFragment();
+                return new VideoFragment();
             case 1:
                 return new MusicFragment();
             case 2:
-                return new MusicFragment();
+                return new VideoFragment();
         }
     }
 

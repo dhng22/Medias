@@ -1,10 +1,14 @@
 package com.example.music;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.SearchView;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -25,6 +30,7 @@ public class MusicFragment extends Fragment {
     public static final int STATE_UP = 1;
     public static final int STATE_DOWN = -1;
     public static CardView bottomNavWrapper;
+    public static ConstraintLayout musicNavControl;
     public static BottomNavigationView bottomNav;
     public static ArrayList<Song> songList;
     float screenHeight, screenWidth, navHeight, navWidth, defaultNavY;
@@ -33,6 +39,8 @@ public class MusicFragment extends Fragment {
     SearchView searchView;
     Button btnFav, btnPlaylist, btnRecent;
     CoordinatorLayout coordinatorLayoutParent;
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     public MusicFragment() {
     }
@@ -40,6 +48,12 @@ public class MusicFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferences = getContext().getSharedPreferences("appdata", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+
+        int currentSong = sharedPreferences.getInt("currentSong", -1);
+        SongListAdapter.oldSongHolderIndex = currentSong;
+        songList.get(currentSong).isCurrentItem = true;
     }
 
     @Override
@@ -55,7 +69,6 @@ public class MusicFragment extends Fragment {
         songListAdapter = new SongListAdapter(getContext(), songList, R.layout.row_song,songRecycler);
         songRecycler.setAdapter(songListAdapter);
         defaultNavY = bottomNavWrapper.getY();
-
         initListener();
         return view;
     }
@@ -116,6 +129,11 @@ public class MusicFragment extends Fragment {
                                 .scaleX(1)
                                 .scaleY(1)
                                 .setDuration(200).start();
+                        musicNavControl.animate().cancel();
+                        musicNavControl.animate().translationY(defaultNavY)
+                                .scaleX(1)
+                                .scaleY(1)
+                                .setDuration(200).start();
                     } else if (state != STATE_DOWN && scrollable && (y1 - motionEvent.getY()) > (screenHeight / 24)) {
                         scrollable = false;
                         state = STATE_DOWN;
@@ -125,6 +143,11 @@ public class MusicFragment extends Fragment {
                                     scrollable = true;
                                     tempCheck = true;
                                 })
+                                .scaleX(screenWidth / navWidth)
+                                .scaleY(screenWidth / navWidth)
+                                .setDuration(200).start();
+                        musicNavControl.animate().cancel();
+                        musicNavControl.animate().y(screenHeight - navHeight)
                                 .scaleX(screenWidth / navWidth)
                                 .scaleY(screenWidth / navWidth)
                                 .setDuration(200).start();
@@ -140,5 +163,12 @@ public class MusicFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        editor.putInt("currentSong", SongListAdapter.oldSongHolderIndex);
+        editor.commit();
     }
 }

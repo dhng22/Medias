@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable-anydpi/music.xml" value="0.1615" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1615" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/circular_progress.xml" value="0.3345" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/corner_card.xml" value="0.3065" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1615" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/search_bar.xml" value="0.3355" />
@@ -16,6 +17,7 @@
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_splash.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/empty_item_row.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_video.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/list_empty.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/row_song.xml" value="0.25" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/menu/bott_navigation.xml" value="0.20789473684210527" />
