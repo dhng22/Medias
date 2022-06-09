@@ -3,11 +3,15 @@ package com.example.music;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.MenuItemCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -34,6 +38,12 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
     public void init() {
         screenHeight = getResources().getDisplayMetrics().heightPixels;
         screenWidth = getResources().getDisplayMetrics().widthPixels;
@@ -55,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         viewPagerTabs.setCurrentItem(1, false);
 
         bottomNavigation.setSelectedItemId(R.id.btnMusicTab);
+        
         initListener();
         initSeekBarProg();
     }
@@ -91,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 default:
-                    viewPagerTabs.setCurrentItem(1,true);
+                    viewPagerTabs.setCurrentItem(1, true);
                     break;
                 case R.id.btnVideoTab:
                     viewPagerTabs.setCurrentItem(0, true);
@@ -101,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
             return true;
+        });
+        bottomNavigation.findViewById(R.id.btnMusicTab).setOnLongClickListener(v -> {
+            Toast.makeText(MainActivity.this, "hey", Toast.LENGTH_SHORT).show();
+            return false;
         });
     }
 

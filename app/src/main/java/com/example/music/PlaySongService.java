@@ -1,5 +1,7 @@
 package com.example.music;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -17,8 +19,6 @@ import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -55,7 +55,7 @@ public class PlaySongService extends Service{
     public static PlaybackStateCompat playbackState;
     public static MediaSessionCompat mediaSession;
     static Handler updateSeekBar;
-    static ObjectAnimator animIncreaseSeekBar;
+    static ObjectAnimator animIncreaseSeekBar, animResetSeekBar;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -68,7 +68,7 @@ public class PlaySongService extends Service{
         updateSeekBarRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                if (mediaPlayer != null && mediaPlayer.isPlaying()&& (animResetSeekBar == null || !animResetSeekBar.isRunning())) {
                     animIncreaseSeekBar = ObjectAnimator.ofInt(MainActivity.songProgress,
                             "progress",
                             MainActivity.songProgress.getProgress(), mediaPlayer.getCurrentPosition()).setDuration(300);
@@ -78,7 +78,6 @@ public class PlaySongService extends Service{
                     }
                 } else if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
                     MainActivity.songProgress.setProgress(mediaPlayer.getCurrentPosition());
-
                 } else {
                     updateSeekBar.removeCallbacks(this);
                 }
@@ -149,33 +148,22 @@ public class PlaySongService extends Service{
             editor.commit();
 
             initNotification();
-            startSong(getApplicationContext());
+//            startSong(getApplicationContext());
 
-            mediaPlayer.setOnCompletionListener(mp -> {
-                if (repeatMode == MODE_REPEAT_ONE) {
-                    mediaPlayer.start();
-                } else {
-                    nextSongAutomatically(getApplicationContext());
-                }
-            });
+            mediaEndListening();
 
         } else if (mediaPlayer == null && sharedPreferences.getInt("currentDur", -1) < 0 && currentSongIndex != -1) {
             currentSong = songList.get(currentSongIndex);
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
 
+            updateNavigationSeekBarListener();
 
             initNotification();
             startSong(getApplicationContext());
 
-            mediaPlayer.setOnCompletionListener(mp -> {
-                if (repeatMode == MODE_REPEAT_ONE) {
-                    mediaPlayer.start();
-                } else {
-                    nextSongAutomatically(getApplicationContext());
-                }
-            });
+            mediaEndListening();
 
-            updateNavigationSeekBarListener();
+
         }
 
         if (currentSongIndex != -1) {
@@ -184,6 +172,17 @@ public class PlaySongService extends Service{
             startForeground(PLAYING_SONG_ID, songNotification);
         }
         return START_NOT_STICKY;
+    }
+
+    private void mediaEndListening() {
+        mediaPlayer.setOnCompletionListener(mp -> {
+            resetNavigationSeekBar();
+            if (repeatMode == MODE_REPEAT_ONE) {
+                mediaPlayer.start();
+            } else {
+                nextSongAutomatically(getApplicationContext());
+            }
+        });
     }
 
     private void initNotification() {
@@ -243,6 +242,7 @@ public class PlaySongService extends Service{
         currentSong.isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
+        resetNavigationSeekBar();
         if (currentSongIndex == 0) {
             int newSongIndex = songList.size() - 2;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
@@ -271,7 +271,7 @@ public class PlaySongService extends Service{
             editor.commit();
             songNotification.actions[1] = actionPlay;
         }
-        changeNotificationSeekBarState(context);
+        changeNotificationSeekBarPlayPauseState(context);
         mediaPlayer.pause();
     }
 
@@ -280,7 +280,7 @@ public class PlaySongService extends Service{
         if (!mediaPlayer.isPlaying()) {
             songNotification.actions[1] = actionPause;
         }
-        changeNotificationSeekBarState(context);
+        changeNotificationSeekBarPlayPauseState(context);
         mediaPlayer.start();
         updateNavigationSeekBarListener();
     }
@@ -289,6 +289,7 @@ public class PlaySongService extends Service{
         currentSong.isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
+        resetNavigationSeekBar();
         if (currentSongIndex == songList.size()-2) {
             int newSongIndex = 0;
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
@@ -344,7 +345,7 @@ public class PlaySongService extends Service{
         context.startService(intent);
     }
 
-    private static void changeNotificationSeekBarState(Context baseContext) {
+    private static void changeNotificationSeekBarPlayPauseState(Context baseContext) {
         playbackState = getPlayBackState(mediaPlayer.isPlaying());
         mediaSession.setPlaybackState(playbackState);
         Intent intent = new Intent(baseContext, PlaySongService.class);
@@ -354,6 +355,19 @@ public class PlaySongService extends Service{
     public static void updateNavigationSeekBarListener() {
         MainActivity.songProgress.setMax(mediaPlayer.getDuration());
         updateSeekBar.postDelayed(updateSeekBarRunnable, 200);
+    }
+
+    public static void resetNavigationSeekBar() {
+        animResetSeekBar = ObjectAnimator.ofInt(MainActivity.songProgress, "progress", MainActivity.songProgress.getProgress(), 0).setDuration(400);
+        animResetSeekBar.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                animResetSeekBar = null;
+                updateSeekBar.postDelayed(updateSeekBarRunnable, 200);
+            }
+        });
+        animResetSeekBar.start();
     }
 
     @Override

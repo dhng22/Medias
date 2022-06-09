@@ -7,5 +7,6 @@ public class OnNotificationSeekBarChange extends MediaSessionCompat.Callback {
     public void onSeekTo(long pos) {
         super.onSeekTo(pos);
         PlaySongService.mediaPlayer.seekTo((int) pos);
+        MainActivity.songProgress.setProgress((int) pos);
     }
 }
