@@ -3,6 +3,7 @@ package com.example.music;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -25,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MusicFragment extends Fragment {
     public static final int STATE_UP = 1;
@@ -51,9 +53,6 @@ public class MusicFragment extends Fragment {
         sharedPreferences = getContext().getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        int currentSong = sharedPreferences.getInt("currentSong", -1);
-        SongListAdapter.oldSongHolderIndex = currentSong;
-        songList.get(currentSong).isCurrentItem = true;
     }
 
     @Override
@@ -162,7 +161,15 @@ public class MusicFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        int currentSong = sharedPreferences.getInt("currentSong", -1);
+        if (currentSong != -1) {
+            PlaySongService.currentSongIndex = currentSong;
+            SongListAdapter.oldSongHolderIndex = currentSong;
+            songList.get(currentSong).isCurrentItem = true;
+        }
 
+        Intent intent = new Intent(getContext(), PlaySongService.class);
+        requireContext().startService(intent);
     }
 
     @Override

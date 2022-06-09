@@ -36,7 +36,13 @@ public class RetrieveMusicService extends IntentService {
             File[] innerFile = file.listFiles();
             if (innerFile != null) {
                 for (File file1 : innerFile) {
-                    if (file1.isDirectory()) {
+                    String name = file1.getName().toLowerCase();
+                    if (file1.isDirectory()
+                            && !name.contains("sys")
+                            && !name.contains("vendor")
+                            && !name.contains("ui")
+                            && !name.contains("com")
+                            && !name.contains("android")) {
                         retrieveMusicReference(file1);
                     } else if (file1.getName().contains(".mp3") && !Objects.requireNonNull(file1.getParent()).contains("record") && file1.length() >= 500000) {
                         musics.add(file1.getAbsolutePath());
