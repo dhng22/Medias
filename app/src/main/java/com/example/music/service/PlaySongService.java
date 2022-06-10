@@ -224,7 +224,7 @@ public class PlaySongService extends Service{
         mediaPlayer.setOnCompletionListener(mp -> {
             resetNavigationSeekBar();
             if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_REPEAT_ONE) {
-                mediaPlayer.start();
+                repeatSong();
             } else {
                 nextSong(getApplicationContext());
             }
@@ -356,6 +356,16 @@ public class PlaySongService extends Service{
         editor.putInt("currentSong", PlaySongService.currentSongIndex);
         editor.commit();
         mainActivityInteractionListener.validateFavButton();
+    }
+
+    public void repeatSong() {
+        editor.putInt("currentDur", -1);
+        editor.commit();
+        resetNavigationSeekBar();
+        newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, currentSongIndex);
+        renewSong(getApplicationContext());
+        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.commit();
     }
     private void stopSongService() {
         if (mediaPlayer != null) {

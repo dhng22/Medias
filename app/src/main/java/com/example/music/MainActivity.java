@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         screenWidth = getResources().getDisplayMetrics().widthPixels;
 
 
+        sharedPreferences = getSharedPreferences("appdata", MODE_PRIVATE);
+        editor = sharedPreferences.edit();
         broadcastManager = LocalBroadcastManager.getInstance(this);
         mapping();
         initSongList();
@@ -232,12 +234,16 @@ public class MainActivity extends AppCompatActivity {
             if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_PLAYLIST) {
                 editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_ONE);
                 editor.commit();
+                Toast.makeText(this, "Repeat one song mode turned on", Toast.LENGTH_SHORT).show();
             } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_ONE) {
                 editor.putInt("repeatMode", PlaySongService.MODE_SHUFFLE);
                 editor.commit();
+                Toast.makeText(this, "Shuffle song mode turned on", Toast.LENGTH_SHORT).show();
             } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
                 editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST);
                 editor.commit();
+                Toast.makeText(this, "Repeat all song mode turned on", Toast.LENGTH_SHORT).show();
+
             }
             invalidateRepeatMode();
         });
