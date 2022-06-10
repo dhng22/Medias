@@ -1,9 +1,10 @@
-package com.example.music;
+package com.example.music.receiver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
+import com.example.music.service.PlaySongService;
 
 public class MusicActionReceiver extends BroadcastReceiver {
     @Override

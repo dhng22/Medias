@@ -32,12 +32,12 @@
         </activity>
 
         <service
-            android:name=".PlaySongService"
+            android:name=".service.PlaySongService"
             android:enabled="true" />
         <receiver
-            android:name=".MusicActionReceiver"
+            android:name=".receiver.MusicActionReceiver"
             android:enabled="true" />
-        <service android:name=".RetrieveMusicService" android:enabled="true" />
+        <service android:name=".service.RetrieveMusicService" android:enabled="true" />
     </application>
 
 </manifest>

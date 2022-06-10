@@ -5,7 +5,7 @@
     android:id="@+id/layout_coordinate_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MusicFragment">
+    tools:context=".fragment.MusicFragment">
 
 
     <com.google.android.material.appbar.AppBarLayout

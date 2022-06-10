@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.service;
 
 import android.app.IntentService;
 import android.content.Intent;

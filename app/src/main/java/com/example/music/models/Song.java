@@ -1,23 +1,33 @@
-package com.example.music;
+package com.example.music.models;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 
+import com.example.music.R;
+
 import java.io.File;
 import java.io.Serializable;
 
 public class Song implements Serializable , Comparable<Song>{
-    long date, duration;
-    boolean lastSong, isCurrentItem;
+    long date;
+    public long duration;
+    public boolean lastSong;
+    public boolean isCurrentItem;
+    public boolean isFavorite;
     public Context context;
-    String songName, albumName, singer, path, txtDuration;
-    Bitmap songImage;
+    public String songName;
+    public String albumName;
+    public String singer;
+    public String path;
+    public String txtDuration;
+    public Bitmap songImage;
     private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
     public Song(String uri, boolean lastSong, Context context) {
         isCurrentItem = false;
+        isFavorite = false;
         this.context = context;
         this.lastSong = lastSong;
         path = uri;

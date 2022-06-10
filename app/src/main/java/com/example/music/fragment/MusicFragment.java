@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.fragment;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -20,13 +20,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.Toast;
 
+import com.example.music.listener.OnMainActivityInteractionListener;
+import com.example.music.service.PlaySongService;
+import com.example.music.R;
+import com.example.music.models.Song;
+import com.example.music.adapter.SongListAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class MusicFragment extends Fragment {
     public static final int STATE_UP = 1;
@@ -43,6 +45,7 @@ public class MusicFragment extends Fragment {
     CoordinatorLayout coordinatorLayoutParent;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    public static OnMainActivityInteractionListener mainActivityInteractionListener;
 
     public MusicFragment() {
     }
@@ -52,6 +55,29 @@ public class MusicFragment extends Fragment {
         super.onCreate(savedInstanceState);
         sharedPreferences = getContext().getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
+        int currentSong = sharedPreferences.getInt("currentSong", -1);
+        if (currentSong != -1) {
+            PlaySongService.currentSongIndex = currentSong;
+            SongListAdapter.oldSongHolderIndex = currentSong;
+            songList.get(currentSong).isCurrentItem = true;
+        }
+        int currentDur = sharedPreferences.getInt("currentDur", -1);
+        if (currentDur != -1) {
+            PlaySongService.currentSongDuration = currentDur;
+            if (currentSong != -1) {
+                mainActivityInteractionListener.setNavigationProgressBarMax((int) songList.get(currentSong).duration);
+                mainActivityInteractionListener.setNavigationProgressBarProgress(currentDur);
+            }
+        }
+        Intent intent = new Intent(getContext(), PlaySongService.class);
+        requireContext().startService(intent);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
 
     }
 
@@ -161,15 +187,6 @@ public class MusicFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        int currentSong = sharedPreferences.getInt("currentSong", -1);
-        if (currentSong != -1) {
-            PlaySongService.currentSongIndex = currentSong;
-            SongListAdapter.oldSongHolderIndex = currentSong;
-            songList.get(currentSong).isCurrentItem = true;
-        }
-
-        Intent intent = new Intent(getContext(), PlaySongService.class);
-        requireContext().startService(intent);
     }
 
     @Override

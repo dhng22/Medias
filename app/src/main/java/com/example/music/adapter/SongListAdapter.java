@@ -1,10 +1,11 @@
-package com.example.music;
+package com.example.music.adapter;
 
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.music.MainActivity;
+import com.example.music.listener.OnMainActivityInteractionListener;
+import com.example.music.listener.OnRecyclerItemSelectedListener;
+import com.example.music.service.PlaySongService;
+import com.example.music.R;
+import com.example.music.models.Song;
 
 import java.util.ArrayList;
 
@@ -29,9 +37,10 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public static int oldSongHolderIndex = -1;
     Song oldSongObj;
     RecyclerView songRecycler;
-    OnNewSongSelectedListener newSongSelectedListener;
+    OnRecyclerItemSelectedListener newSongSelectedListener;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
+    public static OnMainActivityInteractionListener mainActivityInteractionListener;
     public SongListAdapter(Context context, ArrayList<Song> songList, int layout, RecyclerView songRecycler) {
         this.context = context;
         this.songList = songList;
@@ -41,42 +50,80 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         sharedPreferences = context.getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        newSongSelectedListener = (oldSongIndex, newSongIndex) -> {
-            if (oldSongIndex != -1) {
-                Song oldSong = songList.get(oldSongIndex);
-                if (oldSong != null) {
-                    oldSong.isCurrentItem = false;
-                }
-                RecyclerView.ViewHolder oldSongHolder = songRecycler.findViewHolderForLayoutPosition(oldSongIndex);
-                if (oldSongHolder != null) {
-                    ((SongHolder) oldSongHolder).songBackground.setCardBackgroundColor(context.getColor(R.color.white));
-                    ((SongHolder) oldSongHolder).imgAlbum.setImageResource(R.mipmap.ic_album);
-                }
-            }
-            if (newSongIndex != -1) {
-                Song newSong = songList.get(newSongIndex);
-                if (newSong != null) {
-                    newSong.isCurrentItem = true;
-                }
-                RecyclerView.ViewHolder newSongHolder = songRecycler.findViewHolderForLayoutPosition(newSongIndex);
-                if (newSongHolder != null) {
-                    ((SongHolder) newSongHolder).songBackground.setCardBackgroundColor(context.getColor(R.color.color_grey));
-                    if (PlaySongService.mediaPlayer != null) {
-                        if (PlaySongService.mediaPlayer.isPlaying()) {
-                            ((SongHolder) newSongHolder).imgAlbum.setImageResource(R.drawable.ic_playing);
-                        } else {
-                            ((SongHolder) newSongHolder).imgAlbum.setImageResource(R.drawable.ic_pausing);
-                        }
-                    } else {
-                        ((SongHolder) newSongHolder).imgAlbum.setImageResource(R.drawable.ic_playing);
+        newSongSelectedListener = new OnRecyclerItemSelectedListener() {
+            @Override
+            public void setBackGroundForNewSong(int oldSongIndex, int newSongIndex) {
+                if (oldSongIndex != -1) {
+                    Song oldSong = songList.get(oldSongIndex);
+                    if (oldSong != null) {
+                        oldSong.isCurrentItem = false;
+                    }
+                    RecyclerView.ViewHolder oldSongHolder = songRecycler.findViewHolderForLayoutPosition(oldSongIndex);
+                    if (oldSongHolder != null) {
+                        ((SongHolder) oldSongHolder).songBackground.setCardBackgroundColor(context.getColor(R.color.white));
+                        ((SongHolder) oldSongHolder).imgAlbum.setImageResource(R.mipmap.ic_album);
                     }
                 }
-                if (newSong != null) {
-                    oldSongObj = newSong;
+                if (newSongIndex != -1) {
+                    Song newSong = songList.get(newSongIndex);
+                    if (newSong != null) {
+                        newSong.isCurrentItem = true;
+                    }
+                    RecyclerView.ViewHolder newSongHolder = songRecycler.findViewHolderForLayoutPosition(newSongIndex);
+                    if (newSongHolder != null) {
+                        ((SongHolder) newSongHolder).songBackground.setCardBackgroundColor(context.getColor(R.color.color_grey));
+                        if (PlaySongService.mediaPlayer != null) {
+                            if (PlaySongService.mediaPlayer.isPlaying()) {
+                                ((SongHolder) newSongHolder).imgAlbum.setImageResource(R.drawable.ic_playing);
+                            } else {
+                                ((SongHolder) newSongHolder).imgAlbum.setImageResource(R.drawable.ic_pausing);
+                            }
+                        } else {
+                            ((SongHolder) newSongHolder).imgAlbum.setImageResource(R.drawable.ic_playing);
+                        }
+                    }
+                    if (newSong != null) {
+                        oldSongObj = newSong;
+                    }
                     oldSongHolderIndex = newSongIndex;
                 }
             }
+
+            @Override
+            public void onItemClick(int oldPos, int clickedPos) {
+                if (oldSongHolderIndex != clickedPos) {
+                    if (MainActivity.musicController.getVisibility()!=View.VISIBLE) {
+                        MainActivity.turnOnController();
+                    }
+                    editor.putInt("currentDur", -1);
+                    editor.commit();
+                    PlaySongService.resetNavigationSeekBar();
+                    if (PlaySongService.mediaPlayer != null) {
+                        PlaySongService.mediaPlayer.release();
+                        PlaySongService.mediaPlayer = null;
+                    }
+                    PlaySongService.currentSongIndex = clickedPos;
+                    Intent songService = new Intent(context, PlaySongService.class);
+                    context.startService(songService);
+                } else {
+                    if (PlaySongService.mediaPlayer != null) {
+                        if (PlaySongService.mediaPlayer.isPlaying()) {
+                            PlaySongService.pauseSong(context);
+                        } else {
+                            PlaySongService.resumeSong(context);
+                        }
+                    } else {
+                        PlaySongService.currentSongIndex = oldSongHolderIndex;
+                        Intent songService = new Intent(context, PlaySongService.class);
+                        context.startService(songService);
+                    }
+                }
+                setBackGroundForNewSong(oldPos, clickedPos);
+                mainActivityInteractionListener.validateFavButton();
+            }
         };
+
+        PlaySongService.recyclerItemSelectedListener = newSongSelectedListener;
     }
 
 
@@ -97,8 +144,7 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             imgAlbum = itemView.findViewById(R.id.imgAlbum);
 
             itemView.setOnClickListener(v -> {
-                onItemClick(getLayoutPosition());
-                newSongSelectedListener.setBackGroundForNewSong(oldSongHolderIndex, getLayoutPosition());
+                newSongSelectedListener.onItemClick(oldSongHolderIndex, getLayoutPosition());
             });
             btnShowMore.setOnClickListener(v -> {
                 //TODO: context menu
@@ -109,30 +155,7 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void onItemClick(int layoutPosition) {
-        if (oldSongHolderIndex != layoutPosition) {
-            editor.putInt("currentDur", -1);
-            editor.commit();
-            PlaySongService.resetNavigationSeekBar();
-            if (PlaySongService.mediaPlayer != null) {
-                PlaySongService.mediaPlayer.release();
-                PlaySongService.mediaPlayer = null;
-            }
-            PlaySongService.currentSongIndex = layoutPosition;
-            Intent songService = new Intent(context, PlaySongService.class);
-            context.startService(songService);
-        } else {
-            if (PlaySongService.mediaPlayer != null) {
-                if (PlaySongService.mediaPlayer.isPlaying()) {
-                    PlaySongService.pauseSong(context);
-                } else {
-                    PlaySongService.startSong(context);
-                }
-            } else {
-                PlaySongService.currentSongIndex = oldSongHolderIndex;
-                Intent songService = new Intent(context, PlaySongService.class);
-                context.startService(songService);
-            }
-        }
+
     }
 
 
@@ -168,11 +191,7 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         ((SongHolder) holder).imgAlbum.setImageResource(R.drawable.ic_pausing);
                     }
                 } else {
-                    if (sharedPreferences.getInt("currentDur",-1)>0) {
                         ((SongHolder) holder).imgAlbum.setImageResource(R.drawable.ic_pausing);
-                    } else {
-                        ((SongHolder) holder).imgAlbum.setImageResource(R.drawable.ic_playing);
-                    }
                 }
             } else if (getItemViewType(position) == NORMAL_STATE) {
                 ((SongHolder) holder).songBackground.setCardBackgroundColor(context.getColor(R.color.white));

@@ -1,4 +1,4 @@
-package com.example.music;
+package com.example.music.service;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -19,10 +19,23 @@ import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.music.MainActivity;
+import com.example.music.MyApplication;
+import com.example.music.R;
+import com.example.music.models.Song;
+import com.example.music.listener.OnMainActivityInteractionListener;
+import com.example.music.listener.OnNotificationSeekBarChange;
+import com.example.music.listener.OnPlaySongServiceInteractionListener;
+import com.example.music.listener.OnRecyclerItemSelectedListener;
+import com.example.music.receiver.MusicActionReceiver;
 
 import java.util.ArrayList;
 
@@ -34,13 +47,14 @@ public class PlaySongService extends Service{
     public static final int ACTION_STOP = 13;
     public static final int MODE_REPEAT_PLAYLIST = 2;
     public static final int MODE_REPEAT_ONE = 1;
-    public static final int MODE_NO_REPEAT = 0;
+    public static final int MODE_SHUFFLE = 3;
 
     public static int currentSongIndex = -1;
-    static Song currentSong;
+    public static int currentSongDuration = -1;
+    Song currentSong;
     public static MediaPlayer mediaPlayer;
     public static ArrayList<Song> songList;
-    public static OnNewSongSelectedListener newSongSelectedListener;
+    public static OnRecyclerItemSelectedListener newSongSelectedListener;
     public static Notification songNotification;
     private static Runnable updateSeekBarRunnable;
     NotificationCompat.Action actionPrevCompat, actionNextCompat, actionPlayPauseCompat, actionStopCompat;
@@ -48,41 +62,51 @@ public class PlaySongService extends Service{
     PendingIntent pendingPrev, pendingNext, pendingPlayPause, pendingStop;
     SharedPreferences sharedPreferences;
     static SharedPreferences.Editor editor;
-    int repeatMode;
-
+    public static OnMainActivityInteractionListener mainActivityInteractionListener;
     IconCompat icPrevCompat, icNextCompat, icPlayCompat, icPauseCompat, icStopCompat;
     Icon icPlay, icPause;
     public static PlaybackStateCompat playbackState;
     public static MediaSessionCompat mediaSession;
     static Handler updateSeekBar;
     static ObjectAnimator animIncreaseSeekBar, animResetSeekBar;
+    static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
+    public static OnRecyclerItemSelectedListener recyclerItemSelectedListener;
+    LocalBroadcastManager broadcastManager;
+    Intent requestEndApp;
     @Override
     public void onCreate() {
         super.onCreate();
         initActions();
         sharedPreferences = getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        repeatMode = sharedPreferences.getInt("repeatMode", MODE_NO_REPEAT);
         updateSeekBar = new Handler();
+        requestEndApp = new Intent();
+        requestEndApp.setAction(MainActivity.ACTION_STOP_ACTIVITY);
+        broadcastManager = LocalBroadcastManager.getInstance(this);
 
+        initListener();
+    }
+
+    private void initListener() {
         updateSeekBarRunnable = new Runnable() {
             @Override
             public void run() {
-                if (mediaPlayer != null && mediaPlayer.isPlaying()&& (animResetSeekBar == null || !animResetSeekBar.isRunning())) {
-                    animIncreaseSeekBar = ObjectAnimator.ofInt(MainActivity.songProgress,
+                if (mediaPlayer != null && mediaPlayer.isPlaying() && (animResetSeekBar == null || !animResetSeekBar.isRunning())) {
+                    animIncreaseSeekBar = ObjectAnimator.ofInt(mainActivityInteractionListener.getNavigationProgressBar(),
                             "progress",
-                            MainActivity.songProgress.getProgress(), mediaPlayer.getCurrentPosition()).setDuration(300);
+                            mainActivityInteractionListener.getNavigationProgressBarProgress(), mediaPlayer.getCurrentPosition()).setDuration(300);
                     if (!animIncreaseSeekBar.isRunning()) {
                         animIncreaseSeekBar.start();
                         updateSeekBar.postDelayed(this, 200);
                     }
                 } else if (mediaPlayer != null && !mediaPlayer.isPlaying()) {
-                    MainActivity.songProgress.setProgress(mediaPlayer.getCurrentPosition());
+                    mainActivityInteractionListener.setNavigationProgressBarProgress(mediaPlayer.getCurrentPosition());
                 } else {
                     updateSeekBar.removeCallbacks(this);
                 }
             }
         };
+        playSongServiceInteractionListener = () -> currentSong;
     }
 
     private void initActions() {
@@ -115,14 +139,14 @@ public class PlaySongService extends Service{
 
     }
     private void initIcons() {
-        icPrevCompat = IconCompat.createWithResource(this, android.R.drawable.ic_media_previous);
-        icNextCompat = IconCompat.createWithResource(this, android.R.drawable.ic_media_next);
-        icPlayCompat = IconCompat.createWithResource(this, android.R.drawable.ic_media_play);
-        icPauseCompat = IconCompat.createWithResource(this, android.R.drawable.ic_media_pause);
+        icPrevCompat = IconCompat.createWithResource(this, R.drawable.ic_prev);
+        icNextCompat = IconCompat.createWithResource(this, R.drawable.ic_next);
+        icPlayCompat = IconCompat.createWithResource(this, R.drawable.ic_play);
+        icPauseCompat = IconCompat.createWithResource(this, R.drawable.ic_pause);
         icStopCompat = IconCompat.createWithResource(this, android.R.drawable.ic_menu_close_clear_cancel);
 
-        icPause = Icon.createWithResource(this, android.R.drawable.ic_media_pause);
-        icPlay = Icon.createWithResource(this, android.R.drawable.ic_media_play);
+        icPause = Icon.createWithResource(this, R.drawable.ic_pause);
+        icPlay = Icon.createWithResource(this, R.drawable.ic_play);
     }
 
 
@@ -137,26 +161,25 @@ public class PlaySongService extends Service{
         int action = intent.getIntExtra("action", -1);
 
 
-        if (sharedPreferences.getInt("currentDur", -1) > 0 && mediaPlayer == null && currentSongIndex != -1) {
+        if (currentSongDuration > 0 && mediaPlayer == null && currentSongIndex != -1) {
             currentSong = songList.get(currentSongIndex);
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
-            mediaPlayer.seekTo(sharedPreferences.getInt("currentDur", -1));
-            updateNavigationSeekBarListener();
+            mediaPlayer.seekTo(currentSongDuration);
 
 
             editor.putInt("currentDur", -1);
             editor.commit();
+            currentSongDuration = -1;
 
             initNotification();
 //            startSong(getApplicationContext());
 
             mediaEndListening();
 
-        } else if (mediaPlayer == null && sharedPreferences.getInt("currentDur", -1) < 0 && currentSongIndex != -1) {
+        } else if (mediaPlayer == null && currentSongDuration < 0 && currentSongIndex != -1) {
             currentSong = songList.get(currentSongIndex);
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
 
-            updateNavigationSeekBarListener();
 
             initNotification();
             startSong(getApplicationContext());
@@ -170,6 +193,7 @@ public class PlaySongService extends Service{
             handleEvent(action);
 
             startForeground(PLAYING_SONG_ID, songNotification);
+            mainActivityInteractionListener.validatePlayPauseButton();
         }
         return START_NOT_STICKY;
     }
@@ -177,10 +201,10 @@ public class PlaySongService extends Service{
     private void mediaEndListening() {
         mediaPlayer.setOnCompletionListener(mp -> {
             resetNavigationSeekBar();
-            if (repeatMode == MODE_REPEAT_ONE) {
+            if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_REPEAT_ONE) {
                 mediaPlayer.start();
             } else {
-                nextSongAutomatically(getApplicationContext());
+                nextSong(getApplicationContext());
             }
         });
     }
@@ -239,7 +263,7 @@ public class PlaySongService extends Service{
     }
 
     public static void prevSong(Context context) {
-        currentSong.isCurrentItem = false;
+        playSongServiceInteractionListener.getCurrentSong().isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
         resetNavigationSeekBar();
@@ -254,28 +278,34 @@ public class PlaySongService extends Service{
             currentSongIndex = newSongIndex;
             renewSong(context);
         }
+        mainActivityInteractionListener.validateFavButton();
     }
 
     public static void playPause(Context context) {
-        if (mediaPlayer.isPlaying()) {
-            pauseSong(context);
+        if (mediaPlayer == null) {
+            Intent service = new Intent(context, PlaySongService.class);
+            service.putExtra("action", ACTION_PLAY_PAUSE);
+            context.startService(service);
         } else {
-            startSong(context);
+            if (mediaPlayer.isPlaying()) {
+                pauseSong(context);
+            } else {
+                startSong(context);
+            }
         }
-        newSongSelectedListener.setBackGroundForNewSong(-1,currentSongIndex);
+        newSongSelectedListener.setBackGroundForNewSong(-1, currentSongIndex);
+        mainActivityInteractionListener.validatePlayPauseButton();
     }
 
     public static void pauseSong(Context context) {
+        editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
+        editor.commit();
         if (mediaPlayer.isPlaying()) {
-            editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
-            editor.commit();
             songNotification.actions[1] = actionPlay;
         }
         changeNotificationSeekBarPlayPauseState(context);
         mediaPlayer.pause();
     }
-
-
     public static void startSong(Context context) {
         if (!mediaPlayer.isPlaying()) {
             songNotification.actions[1] = actionPause;
@@ -284,9 +314,16 @@ public class PlaySongService extends Service{
         mediaPlayer.start();
         updateNavigationSeekBarListener();
     }
-
-    private static void nextSong(Context context) {
-        currentSong.isCurrentItem = false;
+    public static void resumeSong(Context context) {
+        if (!mediaPlayer.isPlaying()) {
+            songNotification.actions[1] = actionPause;
+        }
+        changeNotificationSeekBarPlayPauseState(context);
+        mediaPlayer.start();
+        updateNavigationSeekBarListener();
+    }
+    public static void nextSong(Context context) {
+        playSongServiceInteractionListener.getCurrentSong().isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
         resetNavigationSeekBar();
@@ -301,31 +338,8 @@ public class PlaySongService extends Service{
             currentSongIndex = newSongIndex;
             renewSong(context);
         }
+        mainActivityInteractionListener.validateFavButton();
     }
-
-    private void nextSongAutomatically(Context context) {
-        currentSong.isCurrentItem = false;
-        editor.putInt("currentDur", -1);
-        editor.commit();
-        if (currentSongIndex < songList.size() - 2) {
-            int newSongIndex = currentSongIndex + 1;
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
-            currentSongIndex = newSongIndex;
-            renewSong(context);
-        } else if (currentSongIndex == songList.size() - 2 ) {
-            if (repeatMode==MODE_REPEAT_PLAYLIST) {
-                int newSongIndex = 0;
-                newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
-                currentSongIndex = newSongIndex;
-                renewSong(context);
-            } else if (repeatMode==MODE_NO_REPEAT) {
-                mediaPlayer.release();
-                mediaPlayer = null;
-                updateNavigationSeekBarListener();
-            }
-        }
-    }
-
     private void stopSongService() {
         if (mediaPlayer != null) {
             editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
@@ -336,6 +350,7 @@ public class PlaySongService extends Service{
             mediaPlayer = null;
         }
         stopSelf();
+        broadcastManager.sendBroadcast(requestEndApp);
     }
 
     private static void renewSong(Context context) {
@@ -353,21 +368,38 @@ public class PlaySongService extends Service{
     }
 
     public static void updateNavigationSeekBarListener() {
-        MainActivity.songProgress.setMax(mediaPlayer.getDuration());
-        updateSeekBar.postDelayed(updateSeekBarRunnable, 200);
+        if (animResetSeekBar == null || !animResetSeekBar.isRunning()) {
+            mainActivityInteractionListener.setNavigationProgressBarMax(mediaPlayer.getDuration());
+            updateSeekBar.postDelayed(updateSeekBarRunnable, 200);
+        }
     }
 
     public static void resetNavigationSeekBar() {
-        animResetSeekBar = ObjectAnimator.ofInt(MainActivity.songProgress, "progress", MainActivity.songProgress.getProgress(), 0).setDuration(400);
-        animResetSeekBar.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                animResetSeekBar = null;
-                updateSeekBar.postDelayed(updateSeekBarRunnable, 200);
-            }
-        });
-        animResetSeekBar.start();
+        if (mainActivityInteractionListener.getNavigationProgressBar() == null) {
+            return;
+        }
+        float progress = mainActivityInteractionListener.getNavigationProgressBarProgress();
+        float max = mainActivityInteractionListener.getNavigationProgressBar().getMax();
+        int time = (int) ((progress / max) * 2000f);
+
+
+            animResetSeekBar = ObjectAnimator.ofInt(mainActivityInteractionListener.getNavigationProgressBar(),
+                    "progress",
+                    (int) progress,
+                    0).setDuration(Math.max(time, 500));
+            animResetSeekBar.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    animResetSeekBar = null;
+                    if (mediaPlayer != null) {
+                        mainActivityInteractionListener.setNavigationProgressBarMax(mediaPlayer.getDuration());
+                        updateSeekBar.postDelayed(updateSeekBarRunnable, 200);
+                    }
+                }
+            });
+            animResetSeekBar.start();
+
     }
 
     @Override
