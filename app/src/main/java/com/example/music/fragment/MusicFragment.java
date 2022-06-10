@@ -192,7 +192,5 @@ public class MusicFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        editor.putInt("currentSong", SongListAdapter.oldSongHolderIndex);
-        editor.commit();
     }
 }

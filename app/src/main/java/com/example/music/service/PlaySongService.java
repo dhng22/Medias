@@ -19,6 +19,8 @@ import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -106,8 +108,20 @@ public class PlaySongService extends Service{
                 }
             }
         };
-        playSongServiceInteractionListener = () -> currentSong;
+        playSongServiceInteractionListener = new OnPlaySongServiceInteractionListener() {
+            @Override
+            public Song getCurrentSong() {
+                return currentSong;
+            }
+
+            @Override
+            public void reloadNotificationMediaState() {
+                resetNotificationMediaState(getApplicationContext());
+            }
+        };
+        OnNotificationSeekBarChange.playSongServiceInteractionListener = playSongServiceInteractionListener;
     }
+
 
     private void initActions() {
         initIntent();
@@ -249,7 +263,7 @@ public class PlaySongService extends Service{
 
     private static PlaybackStateCompat getPlayBackState(boolean playing) {
         return new PlaybackStateCompat.Builder()
-                .setState(!playing? PlaybackStateCompat.STATE_PLAYING:PlaybackStateCompat.STATE_PAUSED, mediaPlayer.getCurrentPosition(), 1, SystemClock.elapsedRealtime())
+                .setState(playing? PlaybackStateCompat.STATE_PLAYING:PlaybackStateCompat.STATE_PAUSED, mediaPlayer.getCurrentPosition(), 1, SystemClock.elapsedRealtime())
                 .setActions(PlaybackStateCompat.ACTION_SEEK_TO).build();
     }
 
@@ -276,12 +290,16 @@ public class PlaySongService extends Service{
         editor.commit();
         resetNavigationSeekBar();
         if (currentSongIndex == 0) {
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, currentSongIndex = songList.size() - 2);
             renewSong(context);
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,currentSongIndex = songList.size() - 2);
+
         } else if (currentSongIndex > 0) {
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, --currentSongIndex);
             renewSong(context);
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,--currentSongIndex);
+
         }
+        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.commit();
         mainActivityInteractionListener.validateFavButton();
     }
 
@@ -297,24 +315,28 @@ public class PlaySongService extends Service{
                 startSong(context);
             }
         }
+
         newSongSelectedListener.setBackGroundForNewSong(-1, currentSongIndex);
         mainActivityInteractionListener.validatePlayPauseButton();
     }
     public static void pauseSong(Context context) {
+
         editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
         editor.commit();
         if (mediaPlayer.isPlaying()) {
             songNotification.actions[1] = actionPlay;
+            mediaPlayer.pause();
         }
-        changeNotificationSeekBarPlayPauseState(context);
-        mediaPlayer.pause();
+        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.commit();
+        resetNotificationMediaState(context);
     }
     public static void startSong(Context context) {
         if (!mediaPlayer.isPlaying()) {
             songNotification.actions[1] = actionPause;
+            mediaPlayer.start();
         }
-        changeNotificationSeekBarPlayPauseState(context);
-        mediaPlayer.start();
+        resetNotificationMediaState(context);
         updateNavigationSeekBarListener();
     }
     public static void nextSong(Context context) {
@@ -323,12 +345,16 @@ public class PlaySongService extends Service{
         editor.commit();
         resetNavigationSeekBar();
         if (currentSongIndex == songList.size()-2) {
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, currentSongIndex = 0);
             renewSong(context);
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,currentSongIndex=0);
+
         } else if (currentSongIndex < songList.size() - 2) {
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, ++currentSongIndex);
             renewSong(context);
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,++currentSongIndex);
+
         }
+        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.commit();
         mainActivityInteractionListener.validateFavButton();
     }
     private void stopSongService() {
@@ -340,6 +366,8 @@ public class PlaySongService extends Service{
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.commit();
         stopSelf();
         broadcastManager.sendBroadcast(requestEndApp);
     }
@@ -351,7 +379,7 @@ public class PlaySongService extends Service{
         context.startService(intent);
     }
 
-    private static void changeNotificationSeekBarPlayPauseState(Context baseContext) {
+    public static void resetNotificationMediaState(Context baseContext) {
         playbackState = getPlayBackState(mediaPlayer.isPlaying());
         mediaSession.setPlaybackState(playbackState);
         Intent intent = new Intent(baseContext, PlaySongService.class);

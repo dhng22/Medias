@@ -6,10 +6,12 @@ import com.example.music.service.PlaySongService;
 
 public class OnNotificationSeekBarChange extends MediaSessionCompat.Callback {
     public static OnMainActivityInteractionListener mainActivityInteractionListener;
+    public static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
     @Override
     public void onSeekTo(long pos) {
         super.onSeekTo(pos);
         PlaySongService.mediaPlayer.seekTo((int) pos);
         mainActivityInteractionListener.setNavigationProgressBarProgress((int) pos);
+        playSongServiceInteractionListener.reloadNotificationMediaState();
     }
 }

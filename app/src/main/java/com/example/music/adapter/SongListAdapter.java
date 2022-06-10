@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -124,6 +124,8 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     }
                 }
                 setBackGroundForNewSong(oldPos, clickedPos);
+                editor.putInt("currentSong", PlaySongService.currentSongIndex);
+                editor.commit();
                 mainActivityInteractionListener.validateFavButton();
             }
         };
@@ -157,10 +159,6 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             PlaySongService.newSongSelectedListener = newSongSelectedListener;
         }
-    }
-
-    private void onItemClick(int layoutPosition) {
-
     }
 
 
