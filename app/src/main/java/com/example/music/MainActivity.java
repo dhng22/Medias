@@ -26,6 +26,7 @@ import com.example.music.fragment.MusicFragment;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.listener.OnNotificationSeekBarChange;
 import com.example.music.listener.OnPlaySongServiceInteractionListener;
+import com.example.music.listener.OnRecyclerItemSelectedListener;
 import com.example.music.models.Song;
 import com.example.music.service.PlaySongService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
     BroadcastReceiver stopActivityReceiver;
     LocalBroadcastManager broadcastManager;
-
+    public static OnRecyclerItemSelectedListener recyclerItemSelectedListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,12 +221,16 @@ public class MainActivity extends AppCompatActivity {
         btnNextSong.setOnClickListener(v -> {
             if (PlaySongService.mediaPlayer != null) {
                 PlaySongService.nextSong(this);
+                recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.currentSongIndex ==0?0: PlaySongService.currentSongIndex+ 1);
+
             }
             invalidatePlayPause();
         });
         btnPrevSong.setOnClickListener(v -> {
             if (PlaySongService.mediaPlayer != null) {
                 PlaySongService.prevSong(this);
+                recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.currentSongIndex==songList.size()-2?songList.size()-1:PlaySongService.currentSongIndex);
+
             }
             invalidatePlayPause();
         });
@@ -255,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
         };
         broadcastManager.registerReceiver(stopActivityReceiver,new IntentFilter(ACTION_STOP_ACTIVITY));
     }
-
 
     public void toggleMusicController() {
         if (musicController.getVisibility() == View.VISIBLE) {

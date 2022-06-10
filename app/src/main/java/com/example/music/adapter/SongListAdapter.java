@@ -128,8 +128,13 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 editor.commit();
                 mainActivityInteractionListener.validateFavButton();
             }
-        };
 
+            @Override
+            public RecyclerView getSongRecycler() {
+                return songRecycler;
+            }
+        };
+        MainActivity.recyclerItemSelectedListener = newSongSelectedListener;
         PlaySongService.recyclerItemSelectedListener = newSongSelectedListener;
     }
 

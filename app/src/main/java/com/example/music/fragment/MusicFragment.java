@@ -73,6 +73,7 @@ public class MusicFragment extends Fragment {
         Intent intent = new Intent(getContext(), PlaySongService.class);
         requireContext().startService(intent);
 
+        mainActivityInteractionListener.validateRepeatButton();
     }
 
     @Override
