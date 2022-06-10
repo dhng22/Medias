@@ -19,8 +19,6 @@ import android.os.SystemClock;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -73,6 +71,7 @@ public class PlaySongService extends Service{
     public static OnRecyclerItemSelectedListener recyclerItemSelectedListener;
     LocalBroadcastManager broadcastManager;
     Intent requestEndApp;
+    int[] songIndexArr, baseSongIndexArr;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -85,6 +84,7 @@ public class PlaySongService extends Service{
         broadcastManager = LocalBroadcastManager.getInstance(this);
 
         initListener();
+        initSongIndexArray();
     }
 
     private void initListener() {
@@ -150,6 +150,14 @@ public class PlaySongService extends Service{
     }
 
 
+    private void initSongIndexArray() {
+        baseSongIndexArr = new int[songList.size()-1];
+        for (int i = 0; i < baseSongIndexArr.length; i++) {
+            baseSongIndexArr[i] = i;
+        }
+        songIndexArr = baseSongIndexArr;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -162,7 +170,7 @@ public class PlaySongService extends Service{
 
 
         if (currentSongDuration > 0 && mediaPlayer == null && currentSongIndex != -1) {
-            currentSong = songList.get(currentSongIndex);
+            currentSong = songList.get(songIndexArr[currentSongIndex]);
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
             mediaPlayer.seekTo(currentSongDuration);
 
@@ -177,7 +185,7 @@ public class PlaySongService extends Service{
             mediaEndListening();
 
         } else if (mediaPlayer == null && currentSongDuration < 0 && currentSongIndex != -1) {
-            currentSong = songList.get(currentSongIndex);
+            currentSong = songList.get(songIndexArr[currentSongIndex]);
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
 
 
@@ -268,15 +276,11 @@ public class PlaySongService extends Service{
         editor.commit();
         resetNavigationSeekBar();
         if (currentSongIndex == 0) {
-            int newSongIndex = songList.size() - 2;
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
-            currentSongIndex = newSongIndex;
             renewSong(context);
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,currentSongIndex = songList.size() - 2);
         } else if (currentSongIndex > 0) {
-            int newSongIndex = currentSongIndex - 1;
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
-            currentSongIndex = newSongIndex;
             renewSong(context);
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,--currentSongIndex);
         }
         mainActivityInteractionListener.validateFavButton();
     }
@@ -296,7 +300,6 @@ public class PlaySongService extends Service{
         newSongSelectedListener.setBackGroundForNewSong(-1, currentSongIndex);
         mainActivityInteractionListener.validatePlayPauseButton();
     }
-
     public static void pauseSong(Context context) {
         editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
         editor.commit();
@@ -314,29 +317,17 @@ public class PlaySongService extends Service{
         mediaPlayer.start();
         updateNavigationSeekBarListener();
     }
-    public static void resumeSong(Context context) {
-        if (!mediaPlayer.isPlaying()) {
-            songNotification.actions[1] = actionPause;
-        }
-        changeNotificationSeekBarPlayPauseState(context);
-        mediaPlayer.start();
-        updateNavigationSeekBarListener();
-    }
     public static void nextSong(Context context) {
         playSongServiceInteractionListener.getCurrentSong().isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
         resetNavigationSeekBar();
         if (currentSongIndex == songList.size()-2) {
-            int newSongIndex = 0;
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
-            currentSongIndex = newSongIndex;
             renewSong(context);
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,currentSongIndex=0);
         } else if (currentSongIndex < songList.size() - 2) {
-            int newSongIndex = currentSongIndex + 1;
-            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,newSongIndex);
-            currentSongIndex = newSongIndex;
             renewSong(context);
+            newSongSelectedListener.setBackGroundForNewSong(currentSongIndex,++currentSongIndex);
         }
         mainActivityInteractionListener.validateFavButton();
     }

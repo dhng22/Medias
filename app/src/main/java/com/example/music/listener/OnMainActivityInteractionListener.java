@@ -14,4 +14,6 @@ public interface OnMainActivityInteractionListener {
     void validatePlayPauseButton();
 
     void validateFavButton();
+
+    void validateRepeatButton();
 }

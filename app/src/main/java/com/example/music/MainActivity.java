@@ -161,6 +161,11 @@ public class MainActivity extends AppCompatActivity {
             public void validateFavButton() {
                 MainActivity.this.invalidateFav();
             }
+
+            @Override
+            public void validateRepeatButton() {
+                invalidateRepeatMode();
+            }
         };
         PlaySongService.mainActivityInteractionListener = listener;
         OnNotificationSeekBarChange.mainActivityInteractionListener = listener;
@@ -214,13 +219,28 @@ public class MainActivity extends AppCompatActivity {
             if (PlaySongService.mediaPlayer != null) {
                 PlaySongService.nextSong(this);
             }
+            invalidatePlayPause();
         });
         btnPrevSong.setOnClickListener(v -> {
             if (PlaySongService.mediaPlayer != null) {
                 PlaySongService.prevSong(this);
             }
+            invalidatePlayPause();
         });
 
+        btnReplayMode.setOnClickListener(v -> {
+            if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_PLAYLIST) {
+                editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_ONE);
+                editor.commit();
+            } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_ONE) {
+                editor.putInt("repeatMode", PlaySongService.MODE_SHUFFLE);
+                editor.commit();
+            } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
+                editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST);
+                editor.commit();
+            }
+            invalidateRepeatMode();
+        });
         stopActivityReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -274,6 +294,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void invalidateRepeatMode() {
+        if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_PLAYLIST) {
+            btnReplayMode.setImageResource(R.drawable.ic_rep_oall);
+        } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_ONE) {
+            btnReplayMode.setImageResource(R.drawable.ic_rep_one);
+        } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
+            btnReplayMode.setImageResource(R.drawable.ic_shuffle);
+        }
+    }
     private void initSeekBarProg() {
         if (PlaySongService.mediaPlayer != null) {
             PlaySongService.updateNavigationSeekBarListener();
