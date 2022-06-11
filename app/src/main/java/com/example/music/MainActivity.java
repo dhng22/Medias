@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnFavController.setOnClickListener(v -> {
             if (PlaySongService.currentSongIndex != -1) {
-                Song song = songList.get(PlaySongService.currentSongIndex);
+                Song song = songList.get(PlaySongService.songIndexArr.get(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex)));
                 song.isFavorite = !song.isFavorite;
                 invalidateFav();
             }
@@ -221,16 +221,18 @@ public class MainActivity extends AppCompatActivity {
         btnNextSong.setOnClickListener(v -> {
             if (PlaySongService.mediaPlayer != null) {
                 PlaySongService.nextSong(this);
-                recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.currentSongIndex ==0?0: PlaySongService.currentSongIndex+ 1);
-
+                if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) != PlaySongService.MODE_SHUFFLE) {
+                    recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex) == 0 ? 0 : PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex) + 1);
+                }
             }
             invalidatePlayPause();
         });
         btnPrevSong.setOnClickListener(v -> {
             if (PlaySongService.mediaPlayer != null) {
                 PlaySongService.prevSong(this);
-                recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.currentSongIndex==songList.size()-2?songList.size()-1:PlaySongService.currentSongIndex);
-
+                if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) != PlaySongService.MODE_SHUFFLE) {
+                    recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex)==songList.size()-2?songList.size()-1:PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
+                }
             }
             invalidatePlayPause();
         });
@@ -243,10 +245,12 @@ public class MainActivity extends AppCompatActivity {
             } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_ONE) {
                 editor.putInt("repeatMode", PlaySongService.MODE_SHUFFLE);
                 editor.commit();
+                playSongServiceInteractionListener.shuffleModeOn();
                 Toast.makeText(this, "Shuffle song mode turned on", Toast.LENGTH_SHORT).show();
             } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
                 editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST);
                 editor.commit();
+                playSongServiceInteractionListener.shuffleModeOff();
                 Toast.makeText(this, "Repeat all song mode turned on", Toast.LENGTH_SHORT).show();
 
             }
@@ -295,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void invalidateFav() {
         if (PlaySongService.currentSongIndex != -1) {
-            Song song = songList.get(PlaySongService.currentSongIndex);
+            Song song = songList.get(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
             if (song.isFavorite) {
                 btnFavController.setColorFilter(Color.RED);
             } else {

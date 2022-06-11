@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public interface OnRecyclerItemSelectedListener {
     void setBackGroundForNewSong(int oldSongIndex, int newSongIndex);
+    void setBackGroundForNewSongOnShuffle(int oldSongIndex, int newSongIndex);
 
     void onItemClick(int oldPos, int clickedPos);
 

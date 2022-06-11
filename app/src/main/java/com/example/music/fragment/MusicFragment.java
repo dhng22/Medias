@@ -14,6 +14,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 
 import com.example.music.listener.OnMainActivityInteractionListener;
+import com.example.music.listener.OnPlaySongServiceInteractionListener;
 import com.example.music.service.PlaySongService;
 import com.example.music.R;
 import com.example.music.models.Song;
@@ -46,6 +48,8 @@ public class MusicFragment extends Fragment {
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     public static OnMainActivityInteractionListener mainActivityInteractionListener;
+    public static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
+    Handler handler;
 
     public MusicFragment() {
     }
@@ -56,6 +60,15 @@ public class MusicFragment extends Fragment {
         sharedPreferences = getContext().getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
+        handler = new Handler();
+
+        initOldSongData();
+
+        mainActivityInteractionListener.validateRepeatButton();
+        handler.postDelayed(() -> playSongServiceInteractionListener.shuffleModeOn(), 0);
+    }
+
+    private void initOldSongData() {
         int currentSong = sharedPreferences.getInt("currentSong", -1);
         if (currentSong != -1) {
             PlaySongService.currentSongIndex = currentSong;
@@ -72,8 +85,6 @@ public class MusicFragment extends Fragment {
         }
         Intent intent = new Intent(getContext(), PlaySongService.class);
         requireContext().startService(intent);
-
-        mainActivityInteractionListener.validateRepeatButton();
     }
 
     @Override

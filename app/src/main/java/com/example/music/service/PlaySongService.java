@@ -30,6 +30,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.music.MainActivity;
 import com.example.music.MyApplication;
 import com.example.music.R;
+import com.example.music.adapter.SongListAdapter;
+import com.example.music.fragment.MusicFragment;
 import com.example.music.models.Song;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.listener.OnNotificationSeekBarChange;
@@ -38,6 +40,9 @@ import com.example.music.listener.OnRecyclerItemSelectedListener;
 import com.example.music.receiver.MusicActionReceiver;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class PlaySongService extends Service{
     public static final int PLAYING_SONG_ID = 221;
@@ -73,7 +78,7 @@ public class PlaySongService extends Service{
     public static OnRecyclerItemSelectedListener recyclerItemSelectedListener;
     LocalBroadcastManager broadcastManager;
     Intent requestEndApp;
-    int[] songIndexArr, baseSongIndexArr;
+    public static ArrayList<Integer> songIndexArr, baseSongIndexArr;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -118,8 +123,45 @@ public class PlaySongService extends Service{
             public void reloadNotificationMediaState() {
                 resetNotificationMediaState(getApplicationContext());
             }
+
+            @Override
+            public void shuffleModeOn() {
+                if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
+                    int tempIndex = currentSongIndex;
+                    songIndexArr = new ArrayList<>(baseSongIndexArr);
+                    Collections.shuffle(songIndexArr);
+                    Log.e("TAG", "shuffleModeOn: "+songIndexArr );
+                    for (int i = 0; i < songIndexArr.size(); i++) {
+                        if (songIndexArr.get(i) == tempIndex) {
+                            songIndexArr.set(i, songIndexArr.get(tempIndex));
+                            songIndexArr.set(tempIndex, tempIndex);
+                        }
+                    }
+                }
+                Log.e("TAG", "shuffleModeOn: "+songIndexArr );
+            }
+
+            @Override
+            public void shuffleModeOff() {
+                currentSongIndex = baseSongIndexArr.get(songIndexArr.get(currentSongIndex));
+                songIndexArr = baseSongIndexArr;
+                Log.e("TAG", "shuffleModeOn: "+songIndexArr );
+            }
+
+            @Override
+            public int getSongIndexAt(int itemOnRecycler) {
+                for (int i = 0; i < songIndexArr.size(); i++) {
+                    if (songIndexArr.get(i) == itemOnRecycler) {
+                        return i;
+                    }
+                }
+                return -1;
+            }
         };
         OnNotificationSeekBarChange.playSongServiceInteractionListener = playSongServiceInteractionListener;
+        MainActivity.playSongServiceInteractionListener = playSongServiceInteractionListener;
+        SongListAdapter.playSongServiceInteractionListener = playSongServiceInteractionListener;
+        MusicFragment.playSongServiceInteractionListener = playSongServiceInteractionListener;
     }
 
 
@@ -165,9 +207,9 @@ public class PlaySongService extends Service{
 
 
     private void initSongIndexArray() {
-        baseSongIndexArr = new int[songList.size()-1];
-        for (int i = 0; i < baseSongIndexArr.length; i++) {
-            baseSongIndexArr[i] = i;
+        baseSongIndexArr = new ArrayList<>();
+        for (int i = 0; i < songList.size()-1; i++) {
+            baseSongIndexArr.add(i);
         }
         songIndexArr = baseSongIndexArr;
     }
@@ -184,7 +226,7 @@ public class PlaySongService extends Service{
 
 
         if (currentSongDuration > 0 && mediaPlayer == null && currentSongIndex != -1) {
-            currentSong = songList.get(songIndexArr[currentSongIndex]);
+            currentSong = songList.get(songIndexArr.get(currentSongIndex));
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
             mediaPlayer.seekTo(currentSongDuration);
 
@@ -199,7 +241,7 @@ public class PlaySongService extends Service{
             mediaEndListening();
 
         } else if (mediaPlayer == null && currentSongDuration < 0 && currentSongIndex != -1) {
-            currentSong = songList.get(songIndexArr[currentSongIndex]);
+            currentSong = songList.get(songIndexArr.get(currentSongIndex));
             mediaPlayer = MediaPlayer.create(this, Uri.parse(currentSong.path));
 
 
@@ -288,6 +330,7 @@ public class PlaySongService extends Service{
         playSongServiceInteractionListener.getCurrentSong().isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
+        currentSongDuration = -1;
         resetNavigationSeekBar();
         if (currentSongIndex == 0) {
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, currentSongIndex = songList.size() - 2);
@@ -298,7 +341,7 @@ public class PlaySongService extends Service{
             renewSong(context);
 
         }
-        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.putInt("currentSong", PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
         editor.commit();
         mainActivityInteractionListener.validateFavButton();
     }
@@ -323,11 +366,12 @@ public class PlaySongService extends Service{
 
         editor.putInt("currentDur", mediaPlayer.getCurrentPosition());
         editor.commit();
+
         if (mediaPlayer.isPlaying()) {
             songNotification.actions[1] = actionPlay;
             mediaPlayer.pause();
         }
-        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.putInt("currentSong", PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
         editor.commit();
         resetNotificationMediaState(context);
     }
@@ -343,8 +387,10 @@ public class PlaySongService extends Service{
         playSongServiceInteractionListener.getCurrentSong().isCurrentItem = false;
         editor.putInt("currentDur", -1);
         editor.commit();
+        currentSongDuration = -1;
         resetNavigationSeekBar();
         if (currentSongIndex == songList.size()-2) {
+            playSongServiceInteractionListener.shuffleModeOn();
             newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, currentSongIndex = 0);
             renewSong(context);
 
@@ -353,7 +399,7 @@ public class PlaySongService extends Service{
             renewSong(context);
 
         }
-        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.putInt("currentSong", PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
         editor.commit();
         mainActivityInteractionListener.validateFavButton();
     }
@@ -364,7 +410,7 @@ public class PlaySongService extends Service{
         resetNavigationSeekBar();
         newSongSelectedListener.setBackGroundForNewSong(currentSongIndex, currentSongIndex);
         renewSong(getApplicationContext());
-        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.putInt("currentSong", PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
         editor.commit();
     }
     private void stopSongService() {
@@ -376,7 +422,7 @@ public class PlaySongService extends Service{
             mediaPlayer.release();
             mediaPlayer = null;
         }
-        editor.putInt("currentSong", PlaySongService.currentSongIndex);
+        editor.putInt("currentSong", PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
         editor.commit();
         stopSelf();
         broadcastManager.sendBroadcast(requestEndApp);
