@@ -130,7 +130,6 @@ public class PlaySongService extends Service{
                     int tempIndex = currentSongIndex;
                     songIndexArr = new ArrayList<>(baseSongIndexArr);
                     Collections.shuffle(songIndexArr);
-                    Log.e("TAG", "shuffleModeOn: "+songIndexArr );
                     for (int i = 0; i < songIndexArr.size(); i++) {
                         if (songIndexArr.get(i) == tempIndex) {
                             songIndexArr.set(i, songIndexArr.get(tempIndex));
@@ -138,14 +137,12 @@ public class PlaySongService extends Service{
                         }
                     }
                 }
-                Log.e("TAG", "shuffleModeOn: "+songIndexArr );
             }
 
             @Override
             public void shuffleModeOff() {
                 currentSongIndex = baseSongIndexArr.get(songIndexArr.get(currentSongIndex));
                 songIndexArr = baseSongIndexArr;
-                Log.e("TAG", "shuffleModeOn: "+songIndexArr );
             }
 
             @Override
