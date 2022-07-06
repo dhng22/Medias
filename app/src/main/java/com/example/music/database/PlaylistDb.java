@@ -12,9 +12,9 @@ public class PlaylistDb extends SQLiteOpenHelper {
         super(context, name, factory, version);
     }
 
-    public Cursor getData() {
+    public Cursor getData(String dbName) {
         SQLiteDatabase database = getReadableDatabase();
-        return database.rawQuery("SELECT * FROM playlist", null);
+        return database.rawQuery("SELECT * FROM '"+dbName+"'", null);
     }
 
     public void queryData(String sql) {

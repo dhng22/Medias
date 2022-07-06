@@ -42,6 +42,7 @@ public class RetrieveMusicService extends IntentService {
                             && !name.contains("vendor")
                             && !name.contains("ui")
                             && !name.contains("com")
+                            && !name.contains("record")
                             && !name.contains("android")) {
                         retrieveMusicReference(file1);
                     } else if (file1.getName().contains(".mp3") && !Objects.requireNonNull(file1.getParent()).contains("record") && file1.length() >= 500000) {

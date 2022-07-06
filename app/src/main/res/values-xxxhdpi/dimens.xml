@@ -1,16 +1,30 @@
 <resources>
-    <dimen name="song_row_padding">12dp</dimen>
-    <dimen name="img_song_size">90dp</dimen>
-    <dimen name="img_song_corner">12.5dp</dimen>
-    <dimen name="img_album_size">25dp</dimen>
-    <dimen name="img_album_margin_start">7dp</dimen>
-    <dimen name="txt_title_margin">5dp</dimen>
-    <dimen name="txt_title_size">20sp</dimen>
-    <dimen name="txt_song_desc_size">13sp</dimen>
-    <dimen name="txt_song_dur_size">15sp</dimen>
-    <dimen name="bottom_item_size">38dp</dimen>
-    <dimen name="nav_corner">28dp</dimen>
-
-    <dimen name="img_empty_size">120dp</dimen>
-    <dimen name="utils_corner">22dp</dimen>
+	<dimen name="song_row_padding">12dp</dimen>
+	<dimen name="img_song_size">90dp</dimen>
+	<dimen name="img_song_corner">12.5dp</dimen>
+	<dimen name="img_album_size">25dp</dimen>
+	<dimen name="img_album_margin_start">7dp</dimen>
+	<dimen name="txt_title_margin">5dp</dimen>
+	<dimen name="txt_title_size">20sp</dimen>
+	<dimen name="txt_song_desc_size">13sp</dimen>
+	<dimen name="txt_song_dur_size">15sp</dimen>
+	<dimen name="bottom_item_size">38dp</dimen>
+	<dimen name="nav_corner">28dp</dimen>
+	<dimen name="img_empty_size">160dp</dimen>
+	<dimen name="utils_corner">29.3dp</dimen>
+	<dimen name="elevation_normal_shadow">16dp</dimen>
+	<dimen name="elevation_music_navigation">20dp</dimen>
+	<dimen name="progress_bar_size">72dp</dimen>
+	<dimen name="margin_music_controller">10.7dp</dimen>
+	<dimen name="margin_start_txt_intro">53.3dp</dimen>
+	<dimen name="margin_top_txt_intro">32dp</dimen>
+	<dimen name="txt_intro_size">28.8sp</dimen>
+	<dimen name="elevation_low_shadow">10.7dp</dimen>
+	<dimen name="padding_button_utils">12dp</dimen>
+	<dimen name="size_txt_music_utils">11.2sp</dimen>
+	<dimen name="size_local_song">26.7dp</dimen>
+	<dimen name="margin_row_song_bottom">5.3dp</dimen>
+	<dimen name="margin_song_image">8dp</dimen>
+	<dimen name="elevation_song_image">2.7dp</dimen>
+	<dimen name="margin_txtSongTitle">13.3dp</dimen>
 </resources>

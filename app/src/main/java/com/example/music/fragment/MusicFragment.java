@@ -2,9 +2,13 @@ package com.example.music.fragment;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.example.music.fragment.FavSongFragment.TABLE_NAME;
+
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.appcompat.widget.SearchView;
@@ -15,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,12 +27,14 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 
-import com.example.music.listener.OnMainActivityInteractionListener;
-import com.example.music.listener.OnPlaySongServiceInteractionListener;
+import com.example.music.GlobalMediaPlayer;
+import com.example.music.database.PlaylistDb;
+import com.example.music.listener.OnMusicFragmentInteractionListener;
+import com.example.music.models.Song;
 import com.example.music.service.PlaySongService;
 import com.example.music.R;
-import com.example.music.models.Song;
 import com.example.music.adapter.SongListAdapter;
+import com.example.music.utils.GlobalListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -38,17 +45,17 @@ public class MusicFragment extends Fragment {
     public static CardView bottomNavWrapper;
     public static ConstraintLayout musicNavControl;
     public static BottomNavigationView bottomNav;
-    public static ArrayList<Song> songList;
     float screenHeight, screenWidth, navHeight, navWidth, defaultNavY;
     RecyclerView songRecycler;
+    GlobalMediaPlayer mediaPlayer;
     SongListAdapter songListAdapter;
     SearchView searchView;
     Button btnFav, btnPlaylist, btnRecent;
     CoordinatorLayout coordinatorLayoutParent;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    public static OnMainActivityInteractionListener mainActivityInteractionListener;
-    public static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
+    OnMusicFragmentInteractionListener musicFragmentInteractionListener;
+    View.OnTouchListener touchListener;
     Handler handler;
 
     public MusicFragment() {
@@ -57,32 +64,24 @@ public class MusicFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = getContext().getSharedPreferences("appdata", MODE_PRIVATE);
+        sharedPreferences = requireContext().getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
+
+        mediaPlayer = GlobalMediaPlayer.getInstance();
 
         handler = new Handler();
 
         initOldSongData();
 
-        mainActivityInteractionListener.validateRepeatButton();
-        handler.postDelayed(() -> playSongServiceInteractionListener.shuffleModeOn(), 0);
+        GlobalListener.MainActivity.listener.validateRepeatButton();
     }
 
     private void initOldSongData() {
-        int currentSong = sharedPreferences.getInt("currentSong", -1);
-        if (currentSong != -1) {
-            PlaySongService.currentSongIndex = currentSong;
-            SongListAdapter.oldSongHolderIndex = currentSong;
-            songList.get(currentSong).isCurrentItem = true;
+        try {
+            mediaPlayer.initOldSong(requireContext());
+        } catch (ClassCastException ignored) {
         }
-        int currentDur = sharedPreferences.getInt("currentDur", -1);
-        if (currentDur != -1) {
-            PlaySongService.currentSongDuration = currentDur;
-            if (currentSong != -1) {
-                mainActivityInteractionListener.setNavigationProgressBarMax((int) songList.get(currentSong).duration);
-                mainActivityInteractionListener.setNavigationProgressBarProgress(currentDur);
-            }
-        }
+
         Intent intent = new Intent(getContext(), PlaySongService.class);
         requireContext().startService(intent);
     }
@@ -90,23 +89,24 @@ public class MusicFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_music, container, false);
-        screenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
-        screenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
+        screenHeight = requireContext().getResources().getDisplayMetrics().heightPixels;
+        screenWidth = requireContext().getResources().getDisplayMetrics().widthPixels;
 
 
         mapping(view);
 
-        songListAdapter = new SongListAdapter(getContext(), songList, R.layout.row_song,songRecycler);
+        songListAdapter = new SongListAdapter(requireContext(), R.layout.row_song, songRecycler,this);
+
         songRecycler.setAdapter(songListAdapter);
-        defaultNavY = bottomNavWrapper.getY();
+
         initListener();
+        Log.e("TAG", "onCreateView: "+mediaPlayer.getPlayingSongList());
         return view;
     }
 
@@ -127,6 +127,12 @@ public class MusicFragment extends Fragment {
                 bottomNavWrapper.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 navHeight = bottomNavWrapper.getHeight();
                 navWidth = bottomNavWrapper.getWidth();
+                defaultNavY = sharedPreferences.getFloat("defaultNavY", -1);
+                if (defaultNavY == -1) {
+                    defaultNavY = bottomNavWrapper.getY();
+                    editor.putFloat("defaultNavY", defaultNavY);
+                    editor.commit();
+                }
             }
         });
         coordinatorLayoutParent.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -137,14 +143,16 @@ public class MusicFragment extends Fragment {
                 screenWidth = coordinatorLayoutParent.getWidth();
             }
         });
-        songRecycler.setOnTouchListener(new View.OnTouchListener() {
+        touchListener = new View.OnTouchListener() {
             boolean scrollable = true;
             boolean tempCheck = true;
             float y1 = 0;
-            int state = STATE_UP;
+            int state;
 
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
+                float bottomNavY = bottomNavWrapper.getY();
+                state = bottomNavY == defaultNavY ? STATE_UP :  STATE_DOWN;
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     y1 = 0;
                     tempCheck = true;
@@ -154,11 +162,11 @@ public class MusicFragment extends Fragment {
                         y1 = motionEvent.getY();
                         tempCheck = false;
                     }
-                    if (state != STATE_UP && scrollable && (y1 - motionEvent.getY()) < -(screenHeight / 24)) {
+                    if (state == STATE_DOWN && scrollable && (y1 - motionEvent.getY()) < -(screenHeight / 24)) {
                         scrollable = false;
-                        state = STATE_UP;
+
                         bottomNavWrapper.animate().cancel();
-                        bottomNavWrapper.animate().translationY(defaultNavY)
+                        bottomNavWrapper.animate().y(defaultNavY)
                                 .withEndAction(() -> {
                                     scrollable = true;
                                     tempCheck = true;
@@ -167,13 +175,13 @@ public class MusicFragment extends Fragment {
                                 .scaleY(1)
                                 .setDuration(200).start();
                         musicNavControl.animate().cancel();
-                        musicNavControl.animate().translationY(defaultNavY)
+                        musicNavControl.animate().y(defaultNavY)
                                 .scaleX(1)
                                 .scaleY(1)
                                 .setDuration(200).start();
-                    } else if (state != STATE_DOWN && scrollable && (y1 - motionEvent.getY()) > (screenHeight / 24)) {
+                    } else if (state == STATE_UP && scrollable && (y1 - motionEvent.getY()) > (screenHeight / 24)) {
                         scrollable = false;
-                        state = STATE_DOWN;
+
                         bottomNavWrapper.animate().cancel();
                         bottomNavWrapper.animate().y(screenHeight - navHeight)
                                 .withEndAction(() -> {
@@ -193,12 +201,37 @@ public class MusicFragment extends Fragment {
                 }
                 return false;
             }
+        };
+        musicFragmentInteractionListener = new OnMusicFragmentInteractionListener() {
+            @Override
+            public void addRecyclerMoveListener(RecyclerView recyclerView) {
+                recyclerView.setOnTouchListener(touchListener);
+            }
+
+        };
+        GlobalListener.MusicFragment.listener = musicFragmentInteractionListener;
+
+        songRecycler.setOnTouchListener(touchListener);
+
+        btnFav.setOnClickListener(v -> GlobalListener.MainActivity.listener.alternateForMusicFragment(new FavSongFragment()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                songListAdapter.filter(newText);
+                return true;
+            }
         });
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.e("TAG", "onResume: ");
     }
 
     @Override

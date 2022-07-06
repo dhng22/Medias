@@ -5,21 +5,32 @@
       <map>
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable-anydpi/music.xml" value="0.1615" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1615" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/bottom_item_row.xml" value="0.3225" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/button.xml" value="0.282" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/circular_progress.xml" value="0.3345" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/corner_card.xml" value="0.3065" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/edt_rename.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/ic_launcher_background.xml" value="0.1615" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/search_bar.xml" value="0.3355" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_icon.xml" value="0.1" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_screen.xml" value="0.301" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_screen_background.xml" value="0.25" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_screen_foreground.xml" value="0.301" />
-        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_main.xml" value="0.33" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_current_song.xml" value="0.29259259259259257" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_main.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_splash.xml" value="0.20789473684210527" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/bottom_sheet_song_option.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/empty_item_row.xml" value="0.20789473684210527" />
-        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_current_song.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_delete.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_fav_song.xml" value="0.33" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_rename.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_video.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/list_empty.xml" value="0.20789473684210527" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/row_first_song.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/row_song.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/timer_picker_layout.xml" value="0.2692307692307692" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/menu/bott_navigation.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1615" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.166" />

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     app:cardCornerRadius="@dimen/img_song_corner"
-    android:layout_marginBottom="4dp"
+    android:layout_marginBottom="@dimen/margin_row_song_bottom"
     app:cardElevation="0dp"
-    android:layout_marginStart="12dp"
-    android:layout_marginEnd="12dp"
+    android:layout_marginStart="@dimen/elevation_normal_shadow"
+    android:layout_marginEnd="@dimen/elevation_normal_shadow"
     android:id="@+id/songBackground"
     app:cardBackgroundColor="@color/white"
     android:layout_width="match_parent"
@@ -26,13 +26,13 @@
             app:layout_constraintTop_toTopOf="parent" />
         <androidx.cardview.widget.CardView
             android:id="@+id/songImageCard"
-            android:layout_marginStart="6dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="6dp"
+            android:layout_marginStart="@dimen/margin_song_image"
+            android:layout_marginTop="@dimen/margin_song_image"
+            android:layout_marginBottom="@dimen/margin_song_image"
             android:layout_width="@dimen/img_song_size"
             android:layout_height="@dimen/img_song_size"
             app:cardCornerRadius="@dimen/img_song_corner"
-            app:cardElevation="2dp"
+            app:cardElevation="@dimen/elevation_song_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -69,14 +69,14 @@
             android:layout_width="0dp"
             android:id="@+id/txtSongTitle"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="@dimen/margin_txtSongTitle"
             android:layout_marginEnd="@dimen/txt_title_margin"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/deep_aqua"
             android:textSize="@dimen/txt_title_size"
             android:textStyle="bold"
-            android:fontFamily="@font/rail"
+            android:fontFamily="@font/rail_regular"
             app:layout_constraintBottom_toTopOf="@+id/guidelineHorMid"
             app:layout_constraintEnd_toStartOf="@id/btnShowMore"
             app:layout_constraintStart_toEndOf="@id/songImageCard" />
@@ -111,7 +111,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/songImageCard"
             app:layout_constraintEnd_toEndOf="@+id/txtSongDesc"
 
-            app:layout_goneMarginEnd="12dp" />
+            app:layout_goneMarginEnd="@dimen/elevation_normal_shadow" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

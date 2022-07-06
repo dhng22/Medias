@@ -1,5 +1,5 @@
 <resources>
-    <dimen name="song_row_padding">3dp</dimen>
+	<dimen name="song_row_padding">3dp</dimen>
 	<dimen name="img_song_size">22.5dp</dimen>
 	<dimen name="img_song_corner">3.1dp</dimen>
 	<dimen name="img_album_size">6.2dp</dimen>
@@ -10,4 +10,21 @@
 	<dimen name="txt_song_dur_size">5sp</dimen>
 	<dimen name="bottom_item_size">9.5dp</dimen>
 	<dimen name="nav_corner">6.5dp</dimen>
+	<dimen name="img_empty_size">40dp</dimen>
+	<dimen name="utils_corner">7.3dp</dimen>
+	<dimen name="elevation_normal_shadow">4dp</dimen>
+	<dimen name="elevation_music_navigation">5dp</dimen>
+	<dimen name="progress_bar_size">18dp</dimen>
+	<dimen name="margin_music_controller">2.7dp</dimen>
+	<dimen name="margin_start_txt_intro">13.3dp</dimen>
+	<dimen name="margin_top_txt_intro">8dp</dimen>
+	<dimen name="txt_intro_size">9.6sp</dimen>
+	<dimen name="elevation_low_shadow">2.7dp</dimen>
+	<dimen name="padding_button_utils">3dp</dimen>
+	<dimen name="size_txt_music_utils">3.7sp</dimen>
+	<dimen name="size_local_song">6.7dp</dimen>
+	<dimen name="margin_row_song_bottom">1.3dp</dimen>
+	<dimen name="margin_song_image">2dp</dimen>
+	<dimen name="elevation_song_image">0.7dp</dimen>
+	<dimen name="margin_txtSongTitle">3.3dp</dimen>
 </resources>

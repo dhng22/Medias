@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme.Button.Cancel" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/color_grey</item>
+    </style>
+    <style name="AppTheme.Button.Start" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/wave</item>
+    </style>
+</resources>

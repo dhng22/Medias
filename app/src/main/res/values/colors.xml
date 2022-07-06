@@ -5,6 +5,7 @@
     <color name="black">#FF000000</color>
     <color name="color_grey">#C6C6C6</color>
     <color name="dark_grey">#808080</color>
+    <color name="darker_grey">#303030</color>
     <color name="deep_aqua">#003B46</color>
     <color name="ocean">#07575B</color>
     <color name="wave">#66A5AD</color>

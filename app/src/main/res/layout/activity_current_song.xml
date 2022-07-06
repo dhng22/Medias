@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sea_foam"
+    android:clipToPadding="false"
+    tools:context=".CurrentSongActivity">
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_percent="0.75"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_percent="0.25"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_percent="0.125"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintGuide_percent="0.875"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.25"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.75"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.125"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline17"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.875"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="@dimen/size_current_song_menu"
+        android:layout_height="@dimen/size_current_song_menu"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_back"
+        app:layout_constraintBottom_toBottomOf="@+id/txtSongTitle"
+        app:layout_constraintEnd_toStartOf="@+id/guideline12"
+        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/ocean" />
+
+    <ImageButton
+        android:id="@+id/btnShowMore"
+        android:layout_width="@dimen/size_current_song_menu"
+        android:layout_height="@dimen/size_current_song_menu"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_more"
+
+        app:layout_constraintBottom_toBottomOf="@+id/txtSongTitle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/guideline13"
+        app:tint="@color/ocean" />
+
+    <TextView
+        android:id="@+id/txtSongTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_txtSongTitle"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:fontFamily="@font/rail_semi_bold"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
+        android:singleLine="true"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/size_current_song_txt"
+        app:layout_constraintBottom_toTopOf="@+id/guideline18"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardCornerRadius="@dimen/nav_corner"
+        app:cardElevation="@dimen/elevation_normal_shadow"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintDimensionRatio="H, 1:1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/guideline12">
+
+        <ImageView
+            android:id="@+id/imgSong"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/gradient" />
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/imageButtonWrapper"
+        android:layout_width="@dimen/size_pause_current_song"
+        android:layout_height="@dimen/size_pause_current_song"
+        app:cardBackgroundColor="@color/deep_aqua"
+        app:cardCornerRadius="90dp"
+        app:cardElevation="@dimen/elevation_song_image"
+        app:cardPreventCornerOverlap="true"
+        app:layout_constraintBottom_toTopOf="@+id/guideline17"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/guideline15">
+
+        <ImageButton
+            android:id="@+id/btnPlayPause"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:scaleType="fitXY"
+            android:src="@drawable/ic_pause"
+            app:tint="#C6FFFFFF" />
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:id="@+id/btnPrev"
+        android:layout_width="@dimen/size_secondary_btn_current_song"
+        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_prev"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonWrapper"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonWrapper"
+        app:layout_constraintStart_toEndOf="@+id/btnReplayMode"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
+        app:tint="@color/deep_aqua" />
+
+    <ImageButton
+        android:id="@+id/btnReplayMode"
+        android:layout_width="@dimen/size_secondary_btn_current_song"
+        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_rep_all"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonWrapper"
+        app:layout_constraintEnd_toStartOf="@+id/guideline12"
+        app:layout_constraintStart_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
+        app:tint="@color/deep_aqua" />
+
+    <ImageButton
+        android:id="@+id/btnNext"
+        android:layout_width="@dimen/size_secondary_btn_current_song"
+        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_next"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonWrapper"
+        app:layout_constraintEnd_toStartOf="@+id/btnTimer"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonWrapper"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
+        app:tint="@color/deep_aqua" />
+
+    <ImageButton
+        android:id="@+id/btnTimer"
+        android:layout_width="@dimen/size_secondary_btn_current_song"
+        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_timer_off"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButtonWrapper"
+        app:layout_constraintEnd_toStartOf="@+id/guideline13"
+        app:layout_constraintStart_toStartOf="@+id/guideline13"
+        app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
+        app:tint="@color/deep_aqua" />
+
+    <SeekBar
+        android:scaleX="1.1"
+        android:id="@+id/seekBarSong"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:progressBackgroundTint="@color/black"
+        android:progressTint="@color/ocean"
+        android:thumbTint="@color/deep_aqua"
+        app:layout_constraintBottom_toTopOf="@+id/guideline15"
+        app:layout_constraintEnd_toEndOf="@+id/btnTimer"
+        app:layout_constraintStart_toStartOf="@+id/btnReplayMode"
+        app:layout_constraintTop_toTopOf="@+id/guideline4"
+        app:layout_constraintVertical_bias="0.65" />
+
+    <TextView
+        android:id="@+id/txtSongProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:textColor="@color/deep_aqua"
+        app:layout_constraintStart_toStartOf="@+id/seekBarSong"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarSong" />
+
+    <TextView
+        android:id="@+id/txtSongDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00:00"
+        android:textColor="@color/deep_aqua"
+        app:layout_constraintEnd_toEndOf="@+id/seekBarSong"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarSong" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline18"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.065"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="@dimen/size_pause_current_song"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="@dimen/bottom_item_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/guideline17">
+
+        <ImageButton
+            android:id="@+id/btnFav"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#B5FFFFFF"
+            android:src="@drawable/ic_fav"
+            app:tint="@color/dark_grey" />
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

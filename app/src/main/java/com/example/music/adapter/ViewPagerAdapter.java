@@ -13,6 +13,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
         super(fragmentActivity);
     }
 
+    Fragment musicTabFrag = new MusicFragment();
+
+
     @NonNull
     @Override
     public Fragment createFragment(int position) {
@@ -20,14 +23,19 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             default:
                 return new VideoFragment();
             case 1:
-                return new MusicFragment();
+                return musicTabFrag;
             case 2:
                 return new VideoFragment();
         }
     }
 
+    public void setMusicTabFrag(Fragment musicTabFrag) {
+        this.musicTabFrag = musicTabFrag;
+    }
+
     @Override
     public int getItemCount() {
+
         return 3;
     }
 }

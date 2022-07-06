@@ -6,10 +6,12 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
     <application
-        android:appCategory="audio"
-        android:name=".MyApplication"
+        android:name="com.example.music.MyApplication"
         android:allowBackup="true"
+        android:appCategory="audio"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -18,26 +20,39 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Music"
         tools:targetApi="31">
+
         <activity
-            android:name=".MainActivity"
-            android:exported="true" />
+            android:name="com.example.music.CurrentSongActivity"
+            android:exported="false" />
         <activity
-            android:theme="@style/Theme.Splash"
-            android:name=".SplashActivity"
-            android:exported="true">
+            android:name="com.example.music.MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustNothing" />
+        <activity
+            android:name="com.example.music.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service
-            android:name=".service.PlaySongService"
+            android:name="com.example.music.service.PlaySongService"
+            android:enabled="true" />
+
+        <receiver
+            android:name="com.example.music.receiver.MusicActionReceiver"
             android:enabled="true" />
         <receiver
-            android:name=".receiver.MusicActionReceiver"
+            android:name="com.example.music.receiver.TimerReceiver"
             android:enabled="true" />
-        <service android:name=".service.RetrieveMusicService" android:enabled="true" />
+
+        <service
+            android:name="com.example.music.service.RetrieveMusicService"
+            android:enabled="true" />
     </application>
 
 </manifest>

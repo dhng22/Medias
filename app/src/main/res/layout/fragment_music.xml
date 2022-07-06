@@ -3,16 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_coordinate_parent"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.MusicFragment">
 
 
     <com.google.android.material.appbar.AppBarLayout
+        app:elevation="0dp"
         android:id="@+id/musicUtils"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@null"
         android:stateListAnimator="@null"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -24,13 +26,12 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginStart="@dimen/margin_start_txt_intro"
+                android:layout_marginTop="@dimen/margin_top_txt_intro"
                 android:fontFamily="@font/rail_bold"
                 android:text="| Listen to your music aesthetically"
                 android:textColor="@color/black"
-                android:textSize="23sp"
-
+                android:textSize="@dimen/txt_intro_size"
                 app:layout_constraintEnd_toStartOf="@+id/guideline10"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +43,7 @@
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintGuide_begin="203dp"
+                app:layout_constraintGuide_percent="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -52,32 +53,33 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:clipToPadding="false"
-            android:paddingBottom="1dp">
-
+            android:paddingBottom="@dimen/elevation_normal_shadow">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/white"
+                app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="@dimen/nav_corner"
-                app:cardElevation="1dp"
+                app:cardElevation="@dimen/margin_music_controller"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.appbar.CollapsingToolbarLayout
+                    android:background="@android:color/transparent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:stateListAnimator="@null"
                     app:layout_scrollFlags="noScroll|enterAlways">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:background="@android:color/transparent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="@dimen/elevation_normal_shadow"
                         android:clipToPadding="false"
-                        android:paddingStart="12dp"
-                        android:paddingTop="12dp"
-                        android:paddingEnd="12dp">
+                        android:paddingStart="@dimen/elevation_normal_shadow"
+                        android:paddingTop="@dimen/elevation_normal_shadow"
+                        android:paddingEnd="@dimen/elevation_normal_shadow">
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/searchViewWrapper"
@@ -86,7 +88,7 @@
                             android:layout_gravity="center_horizontal"
                             android:theme="@style/Theme.MaterialComponents.Light"
                             app:cardCornerRadius="@dimen/nav_corner"
-                            app:cardElevation="8dp">
+                            app:cardElevation="@dimen/elevation_low_shadow">
 
                             <androidx.appcompat.widget.SearchView
                                 android:id="@+id/searchView"
@@ -106,7 +108,7 @@
                             android:layout_height="0dp"
                             app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="@dimen/utils_corner"
-                            app:cardElevation="13dp"
+                            app:cardElevation="@dimen/elevation_normal_shadow"
                             app:layout_constraintDimensionRatio="H, 1.2:1"
                             app:layout_constraintEnd_toStartOf="@+id/btnPlayListWrapper"
                             app:layout_constraintStart_toStartOf="@id/searchViewWrapper"
@@ -119,21 +121,21 @@
                                 android:backgroundTint="@color/black"
                                 android:drawableTop="@drawable/ic_fav"
                                 android:drawableTint="@color/white"
-                                android:paddingVertical="9dp"
+                                android:paddingVertical="@dimen/padding_button_utils"
                                 android:scaleX="1.2"
                                 android:scaleY="1.2"
                                 android:text="Favorite"
-                                android:textSize="9sp" />
+                                android:textSize="@dimen/size_txt_music_utils" />
                         </androidx.cardview.widget.CardView>
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/btnPlayListWrapper"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
-                            android:layout_marginTop="22dp"
+                            android:layout_marginTop="@dimen/utils_corner"
                             app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="@dimen/utils_corner"
-                            app:cardElevation="13dp"
+                            app:cardElevation="@dimen/elevation_normal_shadow"
                             app:layout_constraintDimensionRatio="H, 1.2:1"
                             app:layout_constraintEnd_toEndOf="@+id/searchViewWrapper"
                             app:layout_constraintStart_toStartOf="@id/searchViewWrapper"
@@ -146,11 +148,11 @@
                                 android:backgroundTint="@color/black"
                                 android:drawableTop="@drawable/ic_playlist"
                                 android:drawableTint="@color/white"
-                                android:paddingVertical="9dp"
+                                android:paddingVertical="@dimen/padding_button_utils"
                                 android:scaleX="1.2"
                                 android:scaleY="1.2"
                                 android:text="Playlist"
-                                android:textSize="9sp" />
+                                android:textSize="@dimen/size_txt_music_utils" />
                         </androidx.cardview.widget.CardView>
 
                         <androidx.cardview.widget.CardView
@@ -158,7 +160,7 @@
                             android:layout_height="0dp"
                             app:cardBackgroundColor="@color/white"
                             app:cardCornerRadius="@dimen/utils_corner"
-                            app:cardElevation="13dp"
+                            app:cardElevation="@dimen/elevation_normal_shadow"
                             app:layout_constraintDimensionRatio="H, 1.2:1"
                             app:layout_constraintEnd_toEndOf="@+id/searchViewWrapper"
                             app:layout_constraintStart_toEndOf="@+id/btnPlayListWrapper"
@@ -171,24 +173,24 @@
                                 android:backgroundTint="@color/black"
                                 android:drawableTop="@drawable/ic_recent"
                                 android:drawableTint="@color/white"
-                                android:paddingVertical="9dp"
+                                android:paddingVertical="@dimen/padding_button_utils"
                                 android:scaleX="1.2"
                                 android:scaleY="1.2"
                                 android:text="Recent"
-                                android:textSize="9sp" />
+                                android:textSize="@dimen/size_txt_music_utils" />
                         </androidx.cardview.widget.CardView>
 
                         <TextView
                             android:id="@+id/textView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginBottom="8dp"
+                            android:layout_marginStart="@dimen/elevation_normal_shadow"
+                            android:layout_marginTop="@dimen/elevation_normal_shadow"
+                            android:layout_marginBottom="@dimen/elevation_low_shadow"
                             android:fontFamily="@font/rail_semi_bold"
                             android:text="• Local Song "
                             android:textColor="@color/black"
-                            android:textSize="20dp"
+                            android:textSize="@dimen/size_local_song"
                             app:flow_verticalBias="1"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/btnPlayListWrapper"
@@ -201,9 +203,9 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="@dimen/size_local_song"
                 android:src="@drawable/corner_card"
-                android:translationZ="20dp"
+                android:translationZ="@dimen/size_local_song"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -212,9 +214,14 @@
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:clipToPadding="false"
         android:id="@+id/songList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/recycler_neg_margin"
+        android:paddingTop="@dimen/recycler_pos_margin"
+        android:paddingBottom="@dimen/recycler_pos_margin"
+        android:elevation="-1dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_anchor="@id/musicUtils"
         app:layout_anchorGravity="bottom"

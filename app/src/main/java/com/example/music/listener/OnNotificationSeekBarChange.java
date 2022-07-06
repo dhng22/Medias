@@ -2,16 +2,16 @@ package com.example.music.listener;
 
 import android.support.v4.media.session.MediaSessionCompat;
 
-import com.example.music.service.PlaySongService;
+import com.example.music.GlobalMediaPlayer;
+import com.example.music.utils.GlobalListener;
 
 public class OnNotificationSeekBarChange extends MediaSessionCompat.Callback {
-    public static OnMainActivityInteractionListener mainActivityInteractionListener;
-    public static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
+    GlobalMediaPlayer mediaPlayer = GlobalMediaPlayer.getInstance();
     @Override
     public void onSeekTo(long pos) {
         super.onSeekTo(pos);
-        PlaySongService.mediaPlayer.seekTo((int) pos);
-        mainActivityInteractionListener.setNavigationProgressBarProgress((int) pos);
-        playSongServiceInteractionListener.reloadNotificationMediaState();
+        mediaPlayer.seekTo((int) pos);
+        GlobalListener.MainActivity.listener.setNavigationProgressBarProgress((int) pos);
+        GlobalListener.PlaySongService.listener.reloadNotificationMediaState();
     }
 }

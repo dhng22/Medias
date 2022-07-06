@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.Timer" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:textSize">22sp</item>
+        <item name="android:background">@color/darker_grey</item>
+        <item name="android:textColorPrimary">@color/color_grey</item>
+    </style>
+    <style name="AppTheme.Timer.BackGround" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="android:textSize">22sp</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColorPrimary">@color/color_grey</item>
+    </style>
+</resources>

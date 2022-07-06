@@ -1,8 +1,11 @@
 package com.example.music;
 
+import static com.example.music.GlobalMediaPlayer.MODE_REPEAT_PLAYLIST;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -11,35 +14,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.music.adapter.SongListAdapter;
 import com.example.music.adapter.ViewPagerAdapter;
+import com.example.music.bottomSheet.SongOptionBottomSheetFrag;
+import com.example.music.database.PlaylistDb;
+import com.example.music.fragment.FavSongFragment;
 import com.example.music.fragment.MusicFragment;
 import com.example.music.listener.OnMainActivityInteractionListener;
-import com.example.music.listener.OnNotificationSeekBarChange;
-import com.example.music.listener.OnPlaySongServiceInteractionListener;
-import com.example.music.listener.OnRecyclerItemSelectedListener;
 import com.example.music.models.Song;
-import com.example.music.service.PlaySongService;
+import com.example.music.utils.GlobalListener;
+import com.example.music.utils.SongUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
 
 
 public class MainActivity extends AppCompatActivity {
     public static final String ACTION_STOP_ACTIVITY = "stop";
-    ArrayList<String> musics;
-    ArrayList<Song> songList;
     ConstraintLayout layoutParentScroll;
     public static ConstraintLayout musicController, musicNavControl;
     CardView bottomNavWrapper;
@@ -51,10 +49,11 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar songProgress;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    public static OnPlaySongServiceInteractionListener playSongServiceInteractionListener;
     BroadcastReceiver stopActivityReceiver;
     LocalBroadcastManager broadcastManager;
-    public static OnRecyclerItemSelectedListener recyclerItemSelectedListener;
+    GlobalMediaPlayer mediaPlayer;
+    OnMainActivityInteractionListener listener;
+    PlaylistDb favSongDb,playlistDb, recentSongDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,26 +66,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
+        if (sharedPreferences.getInt("repeatMode", GlobalMediaPlayer.MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_SHUFFLE) {
+            new Handler().postDelayed(() -> mediaPlayer.shuffleModeOn(), 300) ;
+        }
     }
 
     public void init() {
         screenHeight = getResources().getDisplayMetrics().heightPixels;
         screenWidth = getResources().getDisplayMetrics().widthPixels;
+        mediaPlayer = GlobalMediaPlayer.getInstance();
 
 
         sharedPreferences = getSharedPreferences("appdata", MODE_PRIVATE);
         editor = sharedPreferences.edit();
         broadcastManager = LocalBroadcastManager.getInstance(this);
+        initDb();
         mapping();
         initSongList();
 
+        initFavList();
         defaultNavY = bottomNavWrapper.getY();
 
         MusicFragment.bottomNavWrapper = bottomNavWrapper;
         MusicFragment.musicNavControl = musicNavControl;
-        MusicFragment.songList = songList;
         MusicFragment.bottomNav = bottomNavigation;
-        PlaySongService.songList = songList;
 
         viewPagerAdapter = new ViewPagerAdapter(this);
         viewPagerTabs.setAdapter(viewPagerAdapter);
@@ -96,8 +99,22 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation.setSelectedItemId(R.id.btnMusicTab);
 
         initListener();
-        initSeekBarProg();
     }
+
+    private void initFavList() {
+        mediaPlayer.initFavSong(this);
+    }
+
+    private void initDb() {
+        favSongDb = new PlaylistDb(this, "favSong.db", null, 1);
+        favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(200))");
+
+        playlistDb = new PlaylistDb(this, "playlist.db", null, 1);
+
+        recentSongDb = new PlaylistDb(this, "recentSong.db", null, 1);
+        recentSongDb.queryData("CREATE TABLE IF NOT EXISTS recentSong(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(200))");
+    }
+
 
     private void mapping() {
         layoutParentScroll = findViewById(R.id.layout_scroll_parent);
@@ -116,25 +133,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSongList() {
-        musics = (ArrayList<String>) getIntent().getSerializableExtra("musics");
-
-        LinkedList<Song> songsLinkedList = new LinkedList<>();
-
-        for (String music : musics) {
-            songsLinkedList.addFirst(new Song(music, false, this));
-        }
-        songList = new ArrayList<>(songsLinkedList);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            songList.sort(Comparator.naturalOrder());
-        }
-        if (musics.size() > 0) {
-            songList.add(new Song(musics.get(0), true, this));
-        }
+        mediaPlayer.init((ArrayList<String>) getIntent().getSerializableExtra("musics"), this);
     }
 
     private void initListener() {
-        OnMainActivityInteractionListener listener = new OnMainActivityInteractionListener() {
+        listener = new OnMainActivityInteractionListener() {
             @Override
             public ProgressBar getNavigationProgressBar() {
                 return songProgress;
@@ -169,21 +172,65 @@ public class MainActivity extends AppCompatActivity {
             public void validateRepeatButton() {
                 invalidateRepeatMode();
             }
+
+            @Override
+            public void openCurrentSongActivity() {
+                Intent intent = new Intent(MainActivity.this, CurrentSongActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.anim_activity_slide_up, R.anim.anim_nothing);
+            }
+
+            @Override
+            public void showSongBottomSheetOption(SongOptionBottomSheetFrag optionBottomSheetFrag) {
+                optionBottomSheetFrag.show(getSupportFragmentManager(),optionBottomSheetFrag.getTag());
+            }
+
+            @Override
+            public void alternateForMusicFragment(Fragment fragment) {
+                viewPagerAdapter = new ViewPagerAdapter(MainActivity.this);
+                viewPagerAdapter.setMusicTabFrag(fragment);
+                viewPagerTabs.setAdapter(viewPagerAdapter);
+                viewPagerTabs.setCurrentItem(1, false);
+            }
+
+            @Override
+            public void hideFavSongFragment() {
+                viewPagerAdapter = new ViewPagerAdapter(MainActivity.this);
+                viewPagerAdapter.setMusicTabFrag(new MusicFragment());
+                viewPagerTabs.setAdapter(viewPagerAdapter);
+                viewPagerTabs.setCurrentItem(1, false);
+            }
+
+            @Override
+            public void toggleRepeatMode() {
+                toggleRepMode();
+            }
+
+            @Override
+            public void shuffleModeSongOn() {
+                turnOnShuffleMode();
+            }
+
+            @Override
+            public void onFavButtonClicked(Song song) {
+                onFavClicked(song);
+            }
         };
-        PlaySongService.mainActivityInteractionListener = listener;
-        OnNotificationSeekBarChange.mainActivityInteractionListener = listener;
-        SongListAdapter.mainActivityInteractionListener = listener;
-        MusicFragment.mainActivityInteractionListener = listener;
+
+        GlobalListener.MainActivity.listener = listener;
 
         bottomNavigation.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 default:
                     musicNavControl.setVisibility(View.VISIBLE);
-
-                    viewPagerTabs.setCurrentItem(1, true);
+                    if (viewPagerTabs.getCurrentItem() == 1 && mediaPlayer.getCurrentSong() != null) {
+                        listener.openCurrentSongActivity();
+                    } else {
+                        viewPagerTabs.setCurrentItem(1, true);
+                    }
                     break;
                 case R.id.btnVideoTab:
-                    if (PlaySongService.mediaPlayer != null && PlaySongService.mediaPlayer.isPlaying()) {
+                    if (mediaPlayer.isPlaying()) {
                         turnOffController();
                     } else {
                         musicNavControl.setVisibility(View.GONE);
@@ -191,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     viewPagerTabs.setCurrentItem(0, true);
                     break;
                 case R.id.btnFavTab:
-                    if (PlaySongService.mediaPlayer != null && PlaySongService.mediaPlayer.isPlaying()) {
+                    if (mediaPlayer.isPlaying()) {
                         turnOffController();
                     } else {
                         musicNavControl.setVisibility(View.GONE);
@@ -208,61 +255,42 @@ public class MainActivity extends AppCompatActivity {
 
         btnCloseController.setOnClickListener(v -> toggleMusicController());
         btnPlayPauseSong.setOnClickListener(v -> {
-            PlaySongService.playPause(this);
+            GlobalListener.PlaySongService.listener.playOrPause(this);
         });
 
         btnFavController.setOnClickListener(v -> {
-            if (PlaySongService.currentSongIndex != -1) {
-                Song song = songList.get(PlaySongService.songIndexArr.get(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex)));
-                song.isFavorite = !song.isFavorite;
-                invalidateFav();
+            if (mediaPlayer.getCurrentSong() != null) {
+                Song song = mediaPlayer.getCurrentSong();
+                SongUtils.onSongFavClicked(song,-1);
             }
         });
         btnNextSong.setOnClickListener(v -> {
-            if (PlaySongService.mediaPlayer != null) {
-                PlaySongService.nextSong(this);
-                if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) != PlaySongService.MODE_SHUFFLE) {
-                    recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex) == 0 ? 0 : PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex) + 1);
-                }
+            if (mediaPlayer.getPlayerState() != GlobalMediaPlayer.NULL_STATE) {
+                mediaPlayer.nextSong(this);
+                int currentSongIn = mediaPlayer.getVisualSongIndex();
+                GlobalListener.SongListAdapter.listener.getSongRecycler().smoothScrollToPosition(mediaPlayer.isGoingUp()?(currentSongIn==0?0:currentSongIn-1):(currentSongIn+1));
             }
             invalidatePlayPause();
         });
         btnPrevSong.setOnClickListener(v -> {
-            if (PlaySongService.mediaPlayer != null) {
-                PlaySongService.prevSong(this);
-                if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) != PlaySongService.MODE_SHUFFLE) {
-                    recyclerItemSelectedListener.getSongRecycler().smoothScrollToPosition(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex)==songList.size()-2?songList.size()-1:PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
-                }
+            if (mediaPlayer.getPlayerState() != GlobalMediaPlayer.NULL_STATE) {
+                mediaPlayer.prevSong(this);
+                int currentSongIn = mediaPlayer.getVisualSongIndex();
+                GlobalListener.SongListAdapter.listener.getSongRecycler().smoothScrollToPosition(mediaPlayer.isGoingUp()?(currentSongIn==0?0:currentSongIn-1):(currentSongIn+1));
             }
             invalidatePlayPause();
         });
 
         btnReplayMode.setOnClickListener(v -> {
-            if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_PLAYLIST) {
-                editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_ONE);
-                editor.commit();
-                Toast.makeText(this, "Repeat one song mode turned on", Toast.LENGTH_SHORT).show();
-            } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_ONE) {
-                editor.putInt("repeatMode", PlaySongService.MODE_SHUFFLE);
-                editor.commit();
-                playSongServiceInteractionListener.shuffleModeOn();
-                Toast.makeText(this, "Shuffle song mode turned on", Toast.LENGTH_SHORT).show();
-            } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
-                editor.putInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST);
-                editor.commit();
-                playSongServiceInteractionListener.shuffleModeOff();
-                Toast.makeText(this, "Repeat all song mode turned on", Toast.LENGTH_SHORT).show();
-
-            }
-            invalidateRepeatMode();
+            SongUtils.onRepeatModeChanged();
         });
         stopActivityReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                finish();
+                finishAndRemoveTask();
             }
         };
-        broadcastManager.registerReceiver(stopActivityReceiver,new IntentFilter(ACTION_STOP_ACTIVITY));
+        broadcastManager.registerReceiver(stopActivityReceiver, new IntentFilter(ACTION_STOP_ACTIVITY));
     }
 
     public void toggleMusicController() {
@@ -285,9 +313,54 @@ public class MainActivity extends AppCompatActivity {
         }).setDuration(200).start();
     }
 
+    public void onFavClicked(Song song) {
+        if (song.isFavorite) {
+            unFavThisSong(song);
+        } else {
+            favThisSong(song);
+        }
+    }
+    public void favThisSong(Song song) {
+        ArrayList<Song> favList = mediaPlayer.getFavSongList(this);
+        favList.add(song);
+
+        Toast.makeText(this, "Added to favorite!", Toast.LENGTH_SHORT).show();
+        song.isFavorite = true;
+        favSongDb.queryData("INSERT OR IGNORE INTO '" + FavSongFragment.TABLE_NAME + "'(id,name) VALUES(null,'" + song.songName + "' )");
+    }
+    public void unFavThisSong(Song song) {
+        ArrayList<Song> favList = mediaPlayer.getFavSongList(this);
+        favList.remove(song);
+
+        Toast.makeText(this, "Removed from favorite!", Toast.LENGTH_SHORT).show();
+        song.isFavorite = false;
+        favSongDb.queryData("DELETE FROM '" + FavSongFragment.TABLE_NAME + "' WHERE name = '" + song.songName + "'");
+    }
+    public void toggleRepMode() {
+        if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_REPEAT_PLAYLIST) {
+            editor.putInt("repeatMode", GlobalMediaPlayer.MODE_REPEAT_ONE);
+            editor.commit();
+            Toast.makeText(this, "Repeat one song mode turned on", Toast.LENGTH_SHORT).show();
+        } else if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_REPEAT_ONE) {
+            turnOnShuffleMode();
+        } else if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_SHUFFLE) {
+            editor.putInt("repeatMode", MODE_REPEAT_PLAYLIST);
+            editor.commit();
+            mediaPlayer.shuffleModeOff();
+            Toast.makeText(this, "Repeat all song mode turned on", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void turnOnShuffleMode() {
+        editor.putInt("repeatMode", GlobalMediaPlayer.MODE_SHUFFLE);
+        editor.commit();
+        mediaPlayer.shuffleModeOn();
+        Toast.makeText(this, "Shuffle song mode turned on", Toast.LENGTH_SHORT).show();
+    }
+
     public void invalidatePlayPause() {
-        if (PlaySongService.mediaPlayer != null) {
-            if (PlaySongService.mediaPlayer.isPlaying()) {
+        if (mediaPlayer.getPlayerState() != GlobalMediaPlayer.NULL_STATE) {
+            if (mediaPlayer.isPlaying()) {
                 btnPlayPauseSong.setImageResource(R.drawable.ic_pause);
             } else {
                 btnPlayPauseSong.setImageResource(R.drawable.ic_play);
@@ -298,8 +371,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void invalidateFav() {
-        if (PlaySongService.currentSongIndex != -1) {
-            Song song = songList.get(PlaySongService.songIndexArr.get(PlaySongService.currentSongIndex));
+        if (mediaPlayer.getCurrentSong() != null) {
+            Song song = mediaPlayer.getCurrentSong();
             if (song.isFavorite) {
                 btnFavController.setColorFilter(Color.RED);
             } else {
@@ -309,17 +382,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void invalidateRepeatMode() {
-        if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_PLAYLIST) {
-            btnReplayMode.setImageResource(R.drawable.ic_rep_oall);
-        } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_REPEAT_ONE) {
+        if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_REPEAT_PLAYLIST) {
+            btnReplayMode.setImageResource(R.drawable.ic_rep_all);
+        } else if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_REPEAT_ONE) {
             btnReplayMode.setImageResource(R.drawable.ic_rep_one);
-        } else if (sharedPreferences.getInt("repeatMode", PlaySongService.MODE_REPEAT_PLAYLIST) == PlaySongService.MODE_SHUFFLE) {
+        } else if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_SHUFFLE) {
             btnReplayMode.setImageResource(R.drawable.ic_shuffle);
-        }
-    }
-    private void initSeekBarProg() {
-        if (PlaySongService.mediaPlayer != null) {
-            PlaySongService.updateNavigationSeekBarListener();
         }
     }
 
@@ -336,5 +404,15 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = viewPagerAdapter.createFragment(1);
+        if (fragment instanceof MusicFragment) {
+            super.onBackPressed();
+        } else {
+            listener.hideFavSongFragment();
+        }
     }
 }

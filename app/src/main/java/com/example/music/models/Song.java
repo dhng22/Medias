@@ -10,12 +10,17 @@ import com.example.music.R;
 import java.io.File;
 import java.io.Serializable;
 
-public class Song implements Serializable , Comparable<Song>{
+public class Song implements Serializable, Comparable<Song> {
+    public static final int EMPTY_LIST = -1;
+    public static final int PLAYING_STATE = 1;
+    public static final int NORMAL_STATE = 0;
+
+    public int id;
     long date;
+    private int currentState;
     public long duration;
-    public boolean lastSong;
-    public boolean isCurrentItem;
     public boolean isFavorite;
+
     public Context context;
     public String songName;
     public String albumName;
@@ -25,11 +30,12 @@ public class Song implements Serializable , Comparable<Song>{
     public Bitmap songImage;
     private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
-    public Song(String uri, boolean lastSong, Context context) {
-        isCurrentItem = false;
+    public Song(String uri, int songState, Context context) {
+        this.currentState = songState;
+
         isFavorite = false;
         this.context = context;
-        this.lastSong = lastSong;
+
         path = uri;
         retriever.setDataSource(uri);
         singer = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
@@ -49,6 +55,15 @@ public class Song implements Serializable , Comparable<Song>{
 
         byte[] songImgArr = retriever.getEmbeddedPicture();
         validateSongImage(songImgArr);
+    }
+
+
+    public void setCurrentState(int currentState) {
+        this.currentState = currentState;
+    }
+
+    public int getCurrentState() {
+        return currentState;
     }
 
     private void validateSongName() {
@@ -79,6 +94,22 @@ public class Song implements Serializable , Comparable<Song>{
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Song)) return false;
+
+        Song song = (Song) o;
+
+        if (id != song.id) return false;
+        return path.equals(song.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
     public int compareTo(Song o) {
         if (this.date < o.date) {
             return 1;
@@ -86,5 +117,10 @@ public class Song implements Serializable , Comparable<Song>{
             return -1;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return songName + '\n';
     }
 }

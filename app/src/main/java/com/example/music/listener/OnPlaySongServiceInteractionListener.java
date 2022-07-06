@@ -1,16 +1,13 @@
 package com.example.music.listener;
 
-import com.example.music.models.Song;
+import android.content.Context;
 
 public interface OnPlaySongServiceInteractionListener {
-    Song getCurrentSong();
-
     void reloadNotificationMediaState();
 
-    void shuffleModeOn();
+    void playOrPause(Context context);
 
-    void shuffleModeOff();
+    void playStateNotification();
 
-    int getSongIndexAt(int itemOnRecycler);
-
+    void pauseStateNotification();
 }
