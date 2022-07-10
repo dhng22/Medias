@@ -1,5 +1,7 @@
 package com.example.music.listener;
 
+import androidx.fragment.app.FragmentManager;
+
 public interface OnCurrentSongActivityInteractionListener {
     void setSongSeekBarMax(int max);
 
@@ -10,4 +12,8 @@ public interface OnCurrentSongActivityInteractionListener {
     void renewCurrentSong();
 
     void validateButtons();
+
+    FragmentManager getFragmentManager();
+
+    void destroy();
 }

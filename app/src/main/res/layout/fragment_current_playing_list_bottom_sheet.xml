@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bottom_item_row"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".bottomSheet.CurrentPlayingListBottomSheet">
+
+    <ImageButton
+        android:background="@android:color/transparent"
+        android:id="@+id/btnReplayMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/elevation_music_navigation"
+        android:layout_marginTop="@dimen/elevation_music_navigation"
+        android:src="@drawable/ic_rep_all"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtRepMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/rail_med"
+        android:text=" Repeat mode"
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_title_size"
+        app:layout_constraintBottom_toBottomOf="@+id/btnReplayMode"
+        app:layout_constraintStart_toEndOf="@+id/btnReplayMode"
+        app:layout_constraintTop_toTopOf="@+id/btnReplayMode" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCurrentSongs"
+        tools:listitem="@layout/row_current_song"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:paddingTop="@dimen/padding_button_utils"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_sheet_haft_screen_height"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnReplayMode" />
+</androidx.constraintlayout.widget.ConstraintLayout>

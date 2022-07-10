@@ -1,11 +1,14 @@
 package com.example.music;
 
 import static com.example.music.GlobalMediaPlayer.MODE_REPEAT_PLAYLIST;
+import static com.example.music.GlobalMediaPlayer.MODE_SHUFFLE;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -23,15 +26,15 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.music.adapter.ViewPagerAdapter;
-import com.example.music.bottomSheet.SongOptionBottomSheetFrag;
 import com.example.music.database.PlaylistDb;
 import com.example.music.fragment.FavSongFragment;
-import com.example.music.fragment.MusicFragment;
+import com.example.music.fragment.LocalSongFragment;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.models.Song;
 import com.example.music.utils.GlobalListener;
 import com.example.music.utils.SongUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 
@@ -53,22 +56,21 @@ public class MainActivity extends AppCompatActivity {
     LocalBroadcastManager broadcastManager;
     GlobalMediaPlayer mediaPlayer;
     OnMainActivityInteractionListener listener;
-    PlaylistDb favSongDb,playlistDb, recentSongDb;
+    PlaylistDb favSongDb, recentSongDb;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(-1, -1);
         setContentView(R.layout.activity_main);
         init();
+        if (sharedPreferences.getInt("repeatMode", GlobalMediaPlayer.MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_SHUFFLE) {
+            new Handler().postDelayed(() -> mediaPlayer.shuffleModeOn(), 300) ;
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (sharedPreferences.getInt("repeatMode", GlobalMediaPlayer.MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_SHUFFLE) {
-            new Handler().postDelayed(() -> mediaPlayer.shuffleModeOn(), 300) ;
-        }
     }
 
     public void init() {
@@ -85,11 +87,12 @@ public class MainActivity extends AppCompatActivity {
         initSongList();
 
         initFavList();
+        initPlayList();
         defaultNavY = bottomNavWrapper.getY();
 
-        MusicFragment.bottomNavWrapper = bottomNavWrapper;
-        MusicFragment.musicNavControl = musicNavControl;
-        MusicFragment.bottomNav = bottomNavigation;
+        LocalSongFragment.bottomNavWrapper = bottomNavWrapper;
+        LocalSongFragment.musicNavControl = musicNavControl;
+        LocalSongFragment.bottomNav = bottomNavigation;
 
         viewPagerAdapter = new ViewPagerAdapter(this);
         viewPagerTabs.setAdapter(viewPagerAdapter);
@@ -104,15 +107,16 @@ public class MainActivity extends AppCompatActivity {
     private void initFavList() {
         mediaPlayer.initFavSong(this);
     }
+    private void initPlayList() {
+        mediaPlayer.initPlayList(this);
+    }
 
     private void initDb() {
         favSongDb = new PlaylistDb(this, "favSong.db", null, 1);
-        favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(200))");
-
-        playlistDb = new PlaylistDb(this, "playlist.db", null, 1);
+        favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
 
         recentSongDb = new PlaylistDb(this, "recentSong.db", null, 1);
-        recentSongDb.queryData("CREATE TABLE IF NOT EXISTS recentSong(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(200))");
+        recentSongDb.queryData("CREATE TABLE IF NOT EXISTS recentSong(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
     }
 
 
@@ -141,6 +145,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public ProgressBar getNavigationProgressBar() {
                 return songProgress;
+            }
+
+            @Override
+            public FragmentManager getFragmentManager() {
+                return getSupportFragmentManager();
             }
 
             @Override
@@ -181,8 +190,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void showSongBottomSheetOption(SongOptionBottomSheetFrag optionBottomSheetFrag) {
-                optionBottomSheetFrag.show(getSupportFragmentManager(),optionBottomSheetFrag.getTag());
+            public void showSongBottomSheetOption(BottomSheetDialogFragment optionBottomSheetFrag, FragmentManager fragmentManager) {
+                optionBottomSheetFrag.setStyle(DialogFragment.STYLE_NORMAL, R.style.TransparentDialog);
+                if (fragmentManager != null) {
+                    optionBottomSheetFrag.show(fragmentManager, optionBottomSheetFrag.getTag());
+
+                } else {
+                    optionBottomSheetFrag.show(getSupportFragmentManager(), optionBottomSheetFrag.getTag());
+                }
             }
 
             @Override
@@ -194,11 +209,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void hideFavSongFragment() {
-                viewPagerAdapter = new ViewPagerAdapter(MainActivity.this);
-                viewPagerAdapter.setMusicTabFrag(new MusicFragment());
-                viewPagerTabs.setAdapter(viewPagerAdapter);
-                viewPagerTabs.setCurrentItem(1, false);
+            public void resetToMusicFragment() {
+
             }
 
             @Override
@@ -214,6 +226,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFavButtonClicked(Song song) {
                 onFavClicked(song);
+            }
+
+            @Override
+            public void doBackPress() {
+                onBackPressed();
             }
         };
 
@@ -267,16 +284,14 @@ public class MainActivity extends AppCompatActivity {
         btnNextSong.setOnClickListener(v -> {
             if (mediaPlayer.getPlayerState() != GlobalMediaPlayer.NULL_STATE) {
                 mediaPlayer.nextSong(this);
-                int currentSongIn = mediaPlayer.getVisualSongIndex();
-                GlobalListener.SongListAdapter.listener.getSongRecycler().smoothScrollToPosition(mediaPlayer.isGoingUp()?(currentSongIn==0?0:currentSongIn-1):(currentSongIn+1));
+                GlobalListener.SongListAdapter.listener.getSongRecycler().smoothScrollToPosition(mediaPlayer.getVisualSongIndex());
             }
             invalidatePlayPause();
         });
         btnPrevSong.setOnClickListener(v -> {
             if (mediaPlayer.getPlayerState() != GlobalMediaPlayer.NULL_STATE) {
                 mediaPlayer.prevSong(this);
-                int currentSongIn = mediaPlayer.getVisualSongIndex();
-                GlobalListener.SongListAdapter.listener.getSongRecycler().smoothScrollToPosition(mediaPlayer.isGoingUp()?(currentSongIn==0?0:currentSongIn-1):(currentSongIn+1));
+                GlobalListener.SongListAdapter.listener.getSongRecycler().smoothScrollToPosition(mediaPlayer.getVisualSongIndex());
             }
             invalidatePlayPause();
         });
@@ -321,20 +336,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     public void favThisSong(Song song) {
-        ArrayList<Song> favList = mediaPlayer.getFavSongList(this);
-        favList.add(song);
-
-        Toast.makeText(this, "Added to favorite!", Toast.LENGTH_SHORT).show();
-        song.isFavorite = true;
-        favSongDb.queryData("INSERT OR IGNORE INTO '" + FavSongFragment.TABLE_NAME + "'(id,name) VALUES(null,'" + song.songName + "' )");
+        favSongDb.addFavoriteSongToTable(song, FavSongFragment.TABLE_NAME, this);
     }
     public void unFavThisSong(Song song) {
-        ArrayList<Song> favList = mediaPlayer.getFavSongList(this);
-        favList.remove(song);
-
-        Toast.makeText(this, "Removed from favorite!", Toast.LENGTH_SHORT).show();
-        song.isFavorite = false;
-        favSongDb.queryData("DELETE FROM '" + FavSongFragment.TABLE_NAME + "' WHERE name = '" + song.songName + "'");
+        favSongDb.removeFavSongFromTable(song, FavSongFragment.TABLE_NAME, this);
     }
     public void toggleRepMode() {
         if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_REPEAT_PLAYLIST) {
@@ -352,10 +357,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void turnOnShuffleMode() {
-        editor.putInt("repeatMode", GlobalMediaPlayer.MODE_SHUFFLE);
-        editor.commit();
-        mediaPlayer.shuffleModeOn();
-        Toast.makeText(this, "Shuffle song mode turned on", Toast.LENGTH_SHORT).show();
+        if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) != MODE_SHUFFLE) {
+            mediaPlayer.shuffleModeOn();
+            editor.putInt("repeatMode", GlobalMediaPlayer.MODE_SHUFFLE);
+            editor.commit();
+            Toast.makeText(this, "Shuffle song mode turned on", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void invalidatePlayPause() {
@@ -374,7 +381,7 @@ public class MainActivity extends AppCompatActivity {
         if (mediaPlayer.getCurrentSong() != null) {
             Song song = mediaPlayer.getCurrentSong();
             if (song.isFavorite) {
-                btnFavController.setColorFilter(Color.RED);
+                btnFavController.setColorFilter(getColor(R.color.red));
             } else {
                 btnFavController.setColorFilter(getColor(R.color.dark_grey));
             }
@@ -408,11 +415,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Fragment fragment = viewPagerAdapter.createFragment(1);
-        if (fragment instanceof MusicFragment) {
-            super.onBackPressed();
-        } else {
-            listener.hideFavSongFragment();
-        }
+        super.onBackPressed();
     }
 }

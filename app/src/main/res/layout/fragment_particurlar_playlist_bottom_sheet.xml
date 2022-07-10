@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@android:color/transparent"
+    android:layout_height="wrap_content"
+    tools:context=".bottomSheet.ParticularPlaylistBottomSheet">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/playlistImageWrapper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/size_local_song"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/imgSelectedPlaylist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/gradient" />
+    </androidx.cardview.widget.CardView>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/bottom_item_row"
+        app:layout_constraintBottom_toBottomOf="@+id/selectedListRecycler"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_margin="@dimen/elevation_low_shadow"
+        android:layout_marginBottom="@dimen/cardview_default_elevation"
+        android:id="@+id/txtSelectedPlaylist"
+        android:layout_width="@dimen/txt_song_name_width"
+        android:textAlignment="center"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/rail_semi_bold"
+        android:singleLine="true"
+        android:text="Album name"
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_title_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/playlistImageWrapper" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="@dimen/elevation_low_shadow"
+        android:paddingTop="@dimen/elevation_low_shadow"
+        android:paddingBottom="@dimen/elevation_normal_shadow"
+        android:clipToPadding="false"
+        tools:listitem="@layout/row_song"
+        android:id="@+id/selectedListRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_sheet_haft_screen_height"
+        android:elevation="1dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@+id/btnPlaySelectedPlaylist" />
+
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/playlistImageWrapper"
+        app:layout_constraintEnd_toEndOf="@+id/playlistImageWrapper"
+        app:layout_constraintStart_toStartOf="@+id/playlistImageWrapper"
+        app:layout_constraintTop_toTopOf="@id/playlistImageWrapper"
+        app:layout_constraintVertical_bias="0.45" />
+
+    <Button
+        android:fontFamily="@font/rail_semi_bold"
+        android:layout_marginTop="@dimen/elevation_low_shadow"
+        android:theme="@style/AppTheme.Button.Cancel"
+        android:background="@drawable/button"
+        android:id="@+id/btnPlaySelectedPlaylist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play"
+        android:textColor="@color/black"
+        android:drawableLeft="@drawable/ic_playing"
+        android:drawableTint="@color/black"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtSelectedPlaylist" />
+</androidx.constraintlayout.widget.ConstraintLayout>

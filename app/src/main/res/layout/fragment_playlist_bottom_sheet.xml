@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_item_row"
+    tools:context=".bottomSheet.PlaylistBottomSheet">
+
+    <TextView
+        android:id="@+id/txtIntroPlaylistFrag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/txt_title_size"
+        android:fontFamily="@font/rail_semi_bold"
+        android:text="Add to playlist"
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_title_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="@dimen/txt_title_size"
+        android:id="@+id/recyclerPlaylist"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_sheet_haft_screen_height"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/txt_title_margin"
+        android:paddingEnd="@dimen/txt_title_margin"
+        android:paddingBottom="@dimen/recycler_pos_margin"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtIntroPlaylistFrag"
+        app:spanCount="2"
+        tools:listitem="@layout/item_playlist_dark" />
+</androidx.constraintlayout.widget.ConstraintLayout>

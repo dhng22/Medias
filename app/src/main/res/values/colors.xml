@@ -4,11 +4,13 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="color_grey">#C6C6C6</color>
-    <color name="dark_grey">#808080</color>
+    <color name="dark_grey">#5E5E5E</color>
     <color name="darker_grey">#303030</color>
     <color name="deep_aqua">#003B46</color>
     <color name="ocean">#07575B</color>
     <color name="wave">#66A5AD</color>
     <color name="sea_foam">#C4DFE6</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="red">#970202</color>
+    <color name="more_red">#AB0202</color>
 </resources>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/darker_grey"
+    android:clipToPadding="false"
+    app:layout_constraintDimensionRatio="W, 1:1"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.cardview.widget.CardView
+        app:cardElevation="@dimen/elevation_normal_shadow"
+        android:id="@+id/btnAddList"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:cardBackgroundColor="@color/dark_grey"
+        app:cardCornerRadius="@dimen/elevation_normal_shadow"
+        app:layout_constraintDimensionRatio="H,1:1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline25"
+        app:layout_constraintStart_toStartOf="@+id/guideline24"
+        app:layout_constraintTop_toBottomOf="@id/guideline26">
+
+        <ImageView
+            android:id="@+id/imgPlaylist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:src="@drawable/gradient" />
+
+    </androidx.cardview.widget.CardView>
+
+    <ImageButton
+        android:scaleType="fitCenter"
+        android:elevation="13dp"
+        android:layout_margin="@dimen/elevation_music_navigation"
+        android:background="@android:color/transparent"
+        android:id="@+id/btnPlayThisList"
+        android:layout_width="@dimen/margin_start_txt_intro"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        app:layout_constraintBottom_toBottomOf="@+id/btnAddList"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddList"
+        app:srcCompat="@drawable/ic_play"
+        app:tint="@color/white" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.025" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.975" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline26"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_percent="0.03"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textColor="@color/white"
+        android:fontFamily="@font/rail_semi_bold"
+        android:id="@+id/txtPlaylistName"
+        android:text="muffle song"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_txtSongTitle"
+        android:textSize="@dimen/txt_title_size"
+        app:layout_constraintStart_toStartOf="@+id/btnAddList"
+        app:layout_constraintTop_toBottomOf="@id/btnAddList" />
+
+    <TextView
+        android:id="@+id/txtListSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10 songs"
+        android:textSize="@dimen/txt_song_desc_size"
+        android:fontFamily="@font/rail_semi_bold"
+        android:textColor="@color/color_grey"
+        app:layout_constraintStart_toStartOf="@+id/txtPlaylistName"
+        app:layout_constraintTop_toBottomOf="@+id/txtPlaylistName" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintGuide_end="201dp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnMorePlaylist"
+        android:layout_width="@dimen/margin_top_txt_intro"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/btnAddList"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddList"
+        app:srcCompat="@drawable/ic_more"
+        app:tint="@color/white" />
+</androidx.constraintlayout.widget.ConstraintLayout>

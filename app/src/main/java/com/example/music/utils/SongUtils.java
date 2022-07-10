@@ -43,6 +43,9 @@ public class SongUtils {
         if (GlobalListener.CurrentSongActivity.listener != null) {
             GlobalListener.CurrentSongActivity.listener.validateButtons();
         }
+        if (GlobalListener.CurrentPlayingListBottomSheet.listener != null) {
+            GlobalListener.CurrentPlayingListBottomSheet.listener.validateRepMode();
+        }
     }
     public static void onSongFavClicked(Song song, int pos) {
         if (GlobalListener.MainActivity.listener != null) {

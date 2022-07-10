@@ -2,6 +2,7 @@ package com.example.music;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -18,7 +19,12 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.music.bottomSheet.CurrentPlayingListBottomSheet;
+import com.example.music.bottomSheet.DeleteFragment;
+import com.example.music.bottomSheet.EdittextBottomFragment;
+import com.example.music.bottomSheet.PlaylistBottomSheet;
 import com.example.music.bottomSheet.SongOptionBottomSheetFrag;
+import com.example.music.fragment.PlaylistFragment;
 import com.example.music.listener.OnCurrentSongActivityInteractionListener;
 import com.example.music.models.Song;
 import com.example.music.receiver.TimerReceiver;
@@ -34,7 +40,8 @@ public class CurrentSongActivity extends AppCompatActivity {
     public static final int TIMER_ON = 1;
     public static final int TIMER_OFF = -1;
     GlobalMediaPlayer mediaPlayer;
-    ImageButton btnRepMode, btnPrev, btnPlayPause, btnNext, btnTimer, btnFav, btnBack, btnShowMore;
+    ImageButton btnRepMode, btnPrev, btnPlayPause, btnNext, btnTimer, btnFav, btnBack, btnShowMore,
+            btnDelete, btnRename,btnAddList, btnShowCurrentList;
     TextView txtSongTitle, txtSongProgress, txtSongDuration;
     SeekBar seekBarSong;
     Handler handler;
@@ -51,7 +58,7 @@ public class CurrentSongActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_current_song);
 
-        getWindow().setStatusBarColor(getColor(R.color.sea_foam));
+        getWindow().setStatusBarColor(getColor(R.color.darker_grey));
         mapping();
         initVar();
         initListener();
@@ -79,6 +86,18 @@ public class CurrentSongActivity extends AppCompatActivity {
     }
 
     private void initListener() {
+        btnDelete.setOnClickListener(v -> {
+            DeleteFragment deleteFragment = DeleteFragment.getInstance(mediaPlayer.getCurrentSong(), null, mediaPlayer.getSongIndexFromVisualList(mediaPlayer.getCurrentSong()));
+            GlobalListener.MainActivity.listener.showSongBottomSheetOption(deleteFragment, getSupportFragmentManager());
+        });
+        btnRename.setOnClickListener(v -> {
+            EdittextBottomFragment edittextBottomFragment = EdittextBottomFragment.getInstance(mediaPlayer.getCurrentSong(), null, EdittextBottomFragment.ACTION_RENAME, null);
+            GlobalListener.MainActivity.listener.showSongBottomSheetOption(edittextBottomFragment, getSupportFragmentManager());
+        });
+        btnAddList.setOnClickListener(v -> {
+            PlaylistBottomSheet playlistBottomSheet = PlaylistBottomSheet.getInstance(mediaPlayer.getCurrentSong());
+            GlobalListener.MainActivity.listener.showSongBottomSheetOption(playlistBottomSheet, getSupportFragmentManager());
+        });
         seekBarSong.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -133,8 +152,8 @@ public class CurrentSongActivity extends AppCompatActivity {
             validateTimer();
         });
         btnShowMore.setOnClickListener(v -> {
-            SongOptionBottomSheetFrag optionBottomSheetFrag = SongOptionBottomSheetFrag.getInstance(mediaPlayer.getCurrentSong(),-1);
-            optionBottomSheetFrag.setStyle(DialogFragment.STYLE_NORMAL,R.style.TransparentDialog);
+            SongOptionBottomSheetFrag optionBottomSheetFrag = SongOptionBottomSheetFrag.getInstance(mediaPlayer.getCurrentSong(), null, -1, null);
+            optionBottomSheetFrag.setStyle(DialogFragment.STYLE_NORMAL, R.style.TransparentDialog);
             optionBottomSheetFrag.show(getSupportFragmentManager(),optionBottomSheetFrag.getTag());
         });
         runnable = new Runnable() {
@@ -178,8 +197,23 @@ public class CurrentSongActivity extends AppCompatActivity {
                 validateRepMode();
                 validateFav();
             }
+
+            @Override
+            public FragmentManager getFragmentManager() {
+                return getSupportFragmentManager();
+            }
+
+            @Override
+            public void destroy() {
+                finishAfterTransition();
+            }
         };
         GlobalListener.CurrentSongActivity.listener = this.currentSongActivityInteractionListener;
+
+        btnShowCurrentList.setOnClickListener(v -> {
+            CurrentPlayingListBottomSheet currentPlayingListBottomSheet = CurrentPlayingListBottomSheet.getInstance();
+            GlobalListener.MainActivity.listener.showSongBottomSheetOption(currentPlayingListBottomSheet, getSupportFragmentManager());
+        });
     }
 
     private void setAlarm(Calendar cal) {
@@ -203,11 +237,11 @@ public class CurrentSongActivity extends AppCompatActivity {
 
         btnCancelTimer.setOnClickListener(v -> bottomSheetDialog.dismiss());
         btnStartTimer.setOnClickListener(v -> {
-            String val =timerPicker.getDisplayedValues()[timerPicker.getValue()];
-            int time = Integer.parseInt(new StringTokenizer(val," ", false).nextToken());
-            cal.add(Calendar.MINUTE,time);
+            String val = timerPicker.getDisplayedValues()[timerPicker.getValue()];
+            int time = Integer.parseInt(new StringTokenizer(val, " ", false).nextToken());
+            cal.add(Calendar.MINUTE, time);
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pendingTimer);
-            Toast.makeText(CurrentSongActivity.this, "Timer on, app's stopping in "+time+" minutes", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CurrentSongActivity.this, "Timer on, app's stopping in " + time + " minutes", Toast.LENGTH_SHORT).show();
             editor.putInt("timerMode", TIMER_ON);
             editor.commit();
             bottomSheetDialog.dismiss();
@@ -217,7 +251,8 @@ public class CurrentSongActivity extends AppCompatActivity {
     }
 
     private String[] getTimerValues() {
-        return new String[]{"15 minutes", "20 minutes", "30 minutes", "40 minutes", "50 minutes", "60 minutes"};
+        return new String[]{"15 minutes", "20 minutes", "30 minutes", "40 minutes",
+                "50 minutes", "60 minutes","70 minutes", "80 minutes","90 minutes"};
     }
 
 
@@ -234,6 +269,11 @@ public class CurrentSongActivity extends AppCompatActivity {
         seekBarSong = findViewById(R.id.seekBarSong);
         txtSongProgress = findViewById(R.id.txtSongProgress);
         txtSongDuration = findViewById(R.id.txtSongDuration);
+
+        btnDelete = findViewById(R.id.btnDelete);
+        btnRename = findViewById(R.id.btnRename);
+        btnAddList = findViewById(R.id.btnAddList);
+        btnShowCurrentList = findViewById(R.id.btnShowCurrentList);
     }
 
     private void validateDuration(Song song) {
@@ -277,7 +317,7 @@ public class CurrentSongActivity extends AppCompatActivity {
         if (mediaPlayer.getCurrentSong() != null) {
             Song song = mediaPlayer.getCurrentSong();
             if (song.isFavorite) {
-                btnFav.setColorFilter(Color.RED);
+                btnFav.setColorFilter(getColor(R.color.more_red));
             } else {
                 btnFav.setColorFilter(getColor(R.color.dark_grey));
             }

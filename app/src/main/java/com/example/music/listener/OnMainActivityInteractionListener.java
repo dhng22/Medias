@@ -2,13 +2,18 @@ package com.example.music.listener;
 
 import android.widget.ProgressBar;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import com.example.music.bottomSheet.SongOptionBottomSheetFrag;
 import com.example.music.models.Song;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public interface OnMainActivityInteractionListener {
     ProgressBar getNavigationProgressBar();
+
+    FragmentManager getFragmentManager();
 
     int getNavigationProgressBarProgress();
 
@@ -24,15 +29,17 @@ public interface OnMainActivityInteractionListener {
 
     void openCurrentSongActivity();
 
-    void showSongBottomSheetOption(SongOptionBottomSheetFrag optionBottomSheetFrag);
+    void showSongBottomSheetOption(BottomSheetDialogFragment optionBottomSheetFrag, @Nullable FragmentManager fragmentManager);
 
     void alternateForMusicFragment(Fragment fragment);
 
-    void hideFavSongFragment();
+    void resetToMusicFragment();
 
     void toggleRepeatMode();
 
     void shuffleModeSongOn();
 
     void onFavButtonClicked(Song song);
+
+    void doBackPress();
 }

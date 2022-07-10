@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".fragment.PlaylistFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/navBarFavSong"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/darker_grey"
+        android:elevation="2dp"
+        android:paddingBottom="@dimen/txt_song_desc_size"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/txtIntroPlaylistFrag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/txt_title_size"
+            android:fontFamily="@font/rail_semi_bold"
+            android:text="Playlist"
+            android:textColor="@color/color_grey"
+            android:textSize="@dimen/txt_intro_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btnBackFromPlaylistFrag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="@dimen/margin_music_controller"
+            android:src="@drawable/ic_back"
+            app:layout_constraintBottom_toBottomOf="@+id/txtIntroPlaylistFrag"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/txtIntroPlaylistFrag"
+            app:tint="@color/white" />
+
+        <TextView
+            android:id="@+id/btnPlayRandomlyPlaylist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/txt_song_desc_size"
+            android:layout_marginTop="@dimen/txt_title_size"
+            android:drawablePadding="@dimen/txt_title_margin"
+            android:fontFamily="@font/rail_med"
+            android:text="Play randomly"
+            android:textColor="@color/white"
+            android:textSize="@dimen/txt_title_size"
+            app:drawableStartCompat="@drawable/ic_play"
+            app:drawableTint="@color/white"
+            app:layout_constraintStart_toStartOf="@+id/btnBackFromPlaylistFrag"
+            app:layout_constraintTop_toBottomOf="@+id/btnBackFromPlaylistFrag" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/darker_grey"
+        android:paddingStart="@dimen/txt_title_margin"
+        android:paddingEnd="@dimen/txt_title_margin"
+        android:id="@+id/recyclerPlaylist"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/txt_song_desc_size"
+        android:paddingBottom="@dimen/recycler_pos_margin"
+        app:spanCount="2"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/navBarFavSong"
+        tools:listitem="@layout/item_playlist_dark" />
+</androidx.constraintlayout.widget.ConstraintLayout>

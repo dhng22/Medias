@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:cardElevation="22dp"
+    android:background="@drawable/bottom_item_row"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardBackgroundColor="@color/darker_grey"
+    app:cardCornerRadius="@dimen/nav_corner"
+    tools:context=".bottomSheet.SongOptionBottomSheetFrag"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <TextView
+        android:textColor="@color/color_grey"
+        android:fontFamily="@font/rail_med"
+        android:textSize="@dimen/size_current_song_txt"
+        android:textAlignment="center"
+
+        android:id="@+id/txtPlaylistName"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:layout_width="@dimen/txt_song_name_width"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/elevation_music_navigation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:weightSum="3"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/bottom_sheet_third_screen_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtPlaylistName">
+
+        <TextView
+            android:gravity="center_vertical"
+            android:id="@+id/txtPlay"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/img_album_size"
+            android:layout_marginTop="@dimen/elevation_music_navigation"
+            android:fontFamily="@font/rail_med"
+
+            android:text="Play"
+            android:textColor="@color/color_grey"
+            android:textSize="@dimen/txt_title_size"
+            />
+
+
+        <TextView
+            android:layout_weight="1"
+
+            android:id="@+id/txtDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/img_album_size"
+
+            android:fontFamily="@font/rail_med"
+            android:text="Delete"
+            android:gravity="center_vertical"
+            android:textColor="@color/color_grey"
+            android:textSize="@dimen/txt_title_size"
+            />
+
+        <TextView
+            android:id="@+id/txtRename"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/img_album_size"
+            android:layout_weight="1"
+
+            android:layout_marginBottom="@dimen/utils_corner"
+            android:fontFamily="@font/rail_med"
+            android:text="Rename"
+            android:gravity="center_vertical"
+            android:textColor="@color/color_grey"
+            android:textSize="@dimen/txt_title_size"
+            />
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

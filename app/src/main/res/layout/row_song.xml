@@ -6,7 +6,7 @@
     android:layout_marginStart="@dimen/elevation_normal_shadow"
     android:layout_marginEnd="@dimen/elevation_normal_shadow"
     android:id="@+id/songBackground"
-    app:cardBackgroundColor="@color/white"
+    app:cardBackgroundColor="@color/darker_grey"
     android:layout_width="match_parent"
     android:padding="@dimen/song_row_padding"
     android:layout_height="wrap_content"
@@ -45,41 +45,46 @@
                 android:layout_height="match_parent"
                 />
         </androidx.cardview.widget.CardView>
+
         <ImageView
             android:id="@+id/imgAlbum"
             android:layout_width="@dimen/img_album_size"
             android:layout_height="@dimen/img_album_size"
-            android:src="@mipmap/ic_album"
+            android:src="@drawable/ic_album"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintStart_toStartOf="@+id/txtSongTitle"
-            app:layout_constraintTop_toBottomOf="@id/guidelineHorMid" />
+            app:layout_constraintTop_toTopOf="@+id/txtSongDesc"
+            />
+
         <ImageButton
-            app:layout_constraintVertical_bias="0.4"
             android:id="@+id/btnShowMore"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_more"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintVertical_bias="0.4"
+            app:tint="@color/white" />
+
         <TextView
 
-            android:layout_width="0dp"
             android:id="@+id/txtSongTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_txtSongTitle"
             android:layout_marginEnd="@dimen/txt_title_margin"
             android:ellipsize="end"
+            android:fontFamily="@font/rail_regular"
             android:maxLines="1"
-            android:textColor="@color/deep_aqua"
+            android:textColor="@color/color_grey"
             android:textSize="@dimen/txt_title_size"
             android:textStyle="bold"
-            android:fontFamily="@font/rail_regular"
-            app:layout_constraintBottom_toTopOf="@+id/guidelineHorMid"
+            app:layout_constraintBottom_toTopOf="@+id/txtSongDesc"
             app:layout_constraintEnd_toStartOf="@id/btnShowMore"
             app:layout_constraintStart_toEndOf="@id/songImageCard" />
+
         <TextView
             android:id="@+id/txtSongDesc"
             android:layout_width="0dp"
@@ -90,13 +95,14 @@
             android:ellipsize="end"
             android:fontFamily="@font/rail"
             android:maxLines="1"
-            android:textColor="@color/ocean"
+            android:textColor="@color/color_grey"
             android:textSize="@dimen/txt_song_desc_size"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imgAlbum"
             app:layout_constraintEnd_toStartOf="@id/btnShowMore"
             app:layout_constraintStart_toEndOf="@id/imgAlbum"
-            app:layout_constraintTop_toTopOf="@id/imgAlbum" />
+            app:layout_constraintTop_toTopOf="@id/guidelineHorMid"
+             />
+
         <TextView
             android:id="@+id/txtSongDur"
             android:layout_width="0dp"
@@ -105,12 +111,13 @@
             android:ellipsize="end"
             android:fontFamily="@font/ubuntu"
             android:maxLines="1"
-            android:textColor="@color/deep_aqua"
+            android:textColor="@color/color_grey"
             android:textSize="@dimen/txt_song_dur_size"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/songImageCard"
             app:layout_constraintEnd_toEndOf="@+id/txtSongDesc"
 
+            app:layout_constraintTop_toBottomOf="@+id/txtSongDesc"
             app:layout_goneMarginEnd="@dimen/elevation_normal_shadow" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

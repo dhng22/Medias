@@ -30,6 +30,9 @@ public class Song implements Serializable, Comparable<Song> {
     public Bitmap songImage;
     private static final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
+    public Song(String songPath) {
+        this.path = songPath;
+    }
     public Song(String uri, int songState, Context context) {
         this.currentState = songState;
 

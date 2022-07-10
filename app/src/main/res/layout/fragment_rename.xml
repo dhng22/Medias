@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    app:cardElevation="22dp"
     android:background="@drawable/bottom_item_row"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardBackgroundColor="@color/darker_grey"
-    app:cardCornerRadius="@dimen/nav_corner"
-    tools:context=".bottomSheet.RenameFragment"
+    tools:context=".bottomSheet.EdittextBottomFragment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <androidx.constraintlayout.widget.Guideline
@@ -24,7 +21,7 @@
         android:textSize="@dimen/size_current_song_txt"
         android:textAlignment="center"
         android:text="Rename song"
-        android:id="@+id/txtSongName"
+        android:id="@+id/txtHeaderDecision"
         android:singleLine="true"
         android:ellipsize="end"
         android:layout_width="@dimen/txt_song_name_width"
@@ -47,7 +44,7 @@
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtSongName" />
+        app:layout_constraintTop_toBottomOf="@+id/txtHeaderDecision" />
 
     <Button
         android:id="@+id/btnCancelRename"

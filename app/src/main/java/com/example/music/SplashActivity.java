@@ -38,6 +38,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(getColor(R.color.darker_grey));
         setContentView(R.layout.activity_splash);
         init();
     }
@@ -115,6 +116,7 @@ public class SplashActivity extends AppCompatActivity {
                 intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 broadcastManager.unregisterReceiver(this);
                 startActivity(intent1);
+                overridePendingTransition(R.anim.anim_nothing, R.anim.anim_fade_out);
             }
         };
         broadcastManager.registerReceiver(musicReceiver, new IntentFilter(RetrieveMusicService.ACTION_RETRIEVE));

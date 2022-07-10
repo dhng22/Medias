@@ -25,93 +25,91 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:layout_marginBottom="@dimen/elevation_music_navigation"
-
-            android:id="@+id/txtPlay"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/elevation_music_navigation"
-            android:layout_marginStart="@dimen/img_album_size"
-            android:fontFamily="@font/rail_med"
-
-            android:text="Play"
-            android:textAlignment="textStart"
-            android:textColor="@color/color_grey"
-            android:textSize="@dimen/txt_title_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtSongName" />
-
-        <TextView
-            android:id="@+id/txtAddToList"
-            android:layout_marginBottom="@dimen/elevation_music_navigation"
-            android:layout_marginStart="@dimen/img_album_size"
-
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/elevation_music_navigation"
-            android:fontFamily="@font/rail_med"
-
-            android:text="Add to playlist"
-            android:textAlignment="textStart"
-            android:textColor="@color/color_grey"
-            android:textSize="@dimen/txt_title_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtPlay" />
-
-        <TextView
-            android:id="@+id/txtFav"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/elevation_music_navigation"
-            android:layout_marginBottom="@dimen/elevation_music_navigation"
-            android:layout_marginStart="@dimen/img_album_size"
-            android:fontFamily="@font/rail_med"
-            android:text="Add to favorite"
-            android:textAlignment="textStart"
-            android:textColor="@color/color_grey"
-            android:textSize="@dimen/txt_title_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtAddToList" />
-
-
-        <TextView
-            android:id="@+id/txtDelete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/elevation_music_navigation"
-            android:layout_marginBottom="@dimen/elevation_music_navigation"
-            android:layout_marginStart="@dimen/img_album_size"
-
-            android:fontFamily="@font/rail_med"
-            android:text="Delete"
-            android:textAlignment="textStart"
-            android:textColor="@color/color_grey"
-            android:textSize="@dimen/txt_title_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtFav" />
-
-        <TextView
-            android:id="@+id/txtRename"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/elevation_music_navigation"
-            android:layout_marginStart="@dimen/img_album_size"
-
-            android:layout_marginBottom="@dimen/utils_corner"
-            android:fontFamily="@font/rail_med"
-            android:text="Rename"
-            android:textAlignment="textStart"
-            android:textColor="@color/color_grey"
-            android:textSize="@dimen/txt_title_size"
+        <LinearLayout
+            android:weightSum="5"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/bottom_sheet_haft_screen_height"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtDelete" />
+            app:layout_constraintTop_toBottomOf="@+id/txtSongName">
+
+                <TextView
+                    android:gravity="center_vertical"
+                    android:id="@+id/txtPlay"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/img_album_size"
+                    android:layout_marginTop="@dimen/elevation_music_navigation"
+                    android:fontFamily="@font/rail_med"
+
+                    android:text="Play"
+                    android:textColor="@color/color_grey"
+                    android:textSize="@dimen/txt_title_size"
+                    />
+
+                <TextView
+                    android:id="@+id/txtAddToList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+
+                    android:layout_marginStart="@dimen/img_album_size"
+                    android:fontFamily="@font/rail_med"
+
+                    android:text="Add to playlist"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/color_grey"
+                    android:textSize="@dimen/txt_title_size"
+                    />
+
+                <TextView
+                    android:layout_weight="1"
+
+                    android:id="@+id/txtFav"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/img_album_size"
+                    android:fontFamily="@font/rail_med"
+                    android:text="Add to favorite"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/color_grey"
+                    android:textSize="@dimen/txt_title_size"
+                     />
 
 
+                <TextView
+                    android:layout_weight="1"
+
+                    android:id="@+id/txtDelete"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/img_album_size"
+
+                    android:fontFamily="@font/rail_med"
+                    android:text="Delete"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/color_grey"
+                    android:textSize="@dimen/txt_title_size"
+                    />
+
+                <TextView
+                    android:id="@+id/txtRename"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/img_album_size"
+                    android:layout_weight="1"
+
+                    android:layout_marginBottom="@dimen/utils_corner"
+                    android:fontFamily="@font/rail_med"
+                    android:text="Rename"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/color_grey"
+                    android:textSize="@dimen/txt_title_size"
+                    />
+
+
+        </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

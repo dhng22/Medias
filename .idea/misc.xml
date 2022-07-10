@@ -16,18 +16,31 @@
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_screen.xml" value="0.301" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_screen_background.xml" value="0.25" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/drawable/splash_screen_foreground.xml" value="0.301" />
-        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_current_song.xml" value="0.29259259259259257" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_current_song.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_main.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/activity_splash.xml" value="0.20789473684210527" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/bottom_sheet_song_option.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/empty_item_row.xml" value="0.20789473684210527" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_current_playing_list_bottom_sheet.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_current_song.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_decision.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_delete.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_fav_song.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music2.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_particurlar_playlist_bottom_sheet.xml" value="0.33" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_playlist.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_playlist_bottom_sheet.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_playlist_option_bottom_sheet.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_recent_song.xml" value="0.2692307692307692" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_rename.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_video.xml" value="0.20789473684210527" />
-        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/list_empty.xml" value="0.20789473684210527" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist_add.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist_add_dark.xml" value="0.2692307692307692" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist_dark.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/list_empty.xml" value="0.25" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/row_current_song.xml" value="0.5" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/row_first_song.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/row_song.xml" value="0.25" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/timer_picker_layout.xml" value="0.2692307692307692" />

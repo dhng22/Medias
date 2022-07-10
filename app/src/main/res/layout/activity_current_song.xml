@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/sea_foam"
+    android:background="@color/darker_grey"
     android:clipToPadding="false"
     tools:context=".CurrentSongActivity">
 
@@ -113,7 +113,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/txtSongTitle"
         app:layout_constraintEnd_toStartOf="@+id/guideline12"
         app:layout_constraintStart_toStartOf="parent"
-        app:tint="@color/ocean" />
+        app:tint="@color/white" />
 
     <ImageButton
         android:id="@+id/btnShowMore"
@@ -126,7 +126,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/txtSongTitle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline13"
-        app:tint="@color/ocean" />
+        app:tint="@color/white" />
 
     <TextView
         android:id="@+id/txtSongTitle"
@@ -141,7 +141,7 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:textAlignment="center"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/size_current_song_txt"
         app:layout_constraintBottom_toTopOf="@+id/guideline18"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
@@ -159,7 +159,8 @@
         app:layout_constraintBottom_toTopOf="@+id/guideline4"
         app:layout_constraintDimensionRatio="H, 1:1"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
-        app:layout_constraintStart_toStartOf="@+id/guideline12">
+        app:layout_constraintStart_toStartOf="@+id/guideline12"
+        app:layout_constraintTop_toTopOf="@+id/guideline16">
 
         <ImageView
             android:id="@+id/imgSong"
@@ -172,14 +173,13 @@
         android:id="@+id/imageButtonWrapper"
         android:layout_width="@dimen/size_pause_current_song"
         android:layout_height="@dimen/size_pause_current_song"
-        app:cardBackgroundColor="@color/deep_aqua"
+        app:cardBackgroundColor="@color/color_grey"
         app:cardCornerRadius="90dp"
         app:cardElevation="@dimen/elevation_song_image"
         app:cardPreventCornerOverlap="true"
         app:layout_constraintBottom_toTopOf="@+id/guideline17"
         app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toTopOf="@+id/guideline15">
+        app:layout_constraintStart_toStartOf="@+id/guideline3">
 
         <ImageButton
             android:id="@+id/btnPlayPause"
@@ -188,13 +188,76 @@
             android:background="@android:color/transparent"
             android:scaleType="fitXY"
             android:src="@drawable/ic_pause"
-            app:tint="#C6FFFFFF" />
+            app:tint="@color/darker_grey" />
     </androidx.cardview.widget.CardView>
+
+
+    <ImageButton
+        android:id="@+id/btnDelete"
+        android:layout_width="@dimen/margin_start_txt_intro"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_delete"
+        app:layout_constraintBottom_toBottomOf="@+id/btnFav"
+        app:layout_constraintStart_toStartOf="@+id/seekBarSong"
+        app:tint="@color/color_grey" />
+
+    <ImageButton
+        android:id="@+id/btnRename"
+        android:layout_width="@dimen/margin_start_txt_intro"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_rename"
+        app:layout_constraintBottom_toBottomOf="@+id/btnFav"
+        app:layout_constraintEnd_toStartOf="@+id/btnFav"
+        app:layout_constraintStart_toEndOf="@+id/btnDelete"
+        app:tint="@color/color_grey" />
+
+    <ImageButton
+        android:id="@+id/btnFav"
+        android:layout_width="@dimen/margin_start_txt_intro"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_fav"
+        app:layout_constraintBottom_toTopOf="@+id/seekBarSong"
+        app:layout_constraintEnd_toStartOf="@+id/guideline3"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toBottomOf="@+id/cardView2"
+        app:layout_constraintVertical_bias="0.6"
+        app:tint="@color/color_grey" />
+
+
+    <ImageButton
+        android:id="@+id/btnAddList"
+        android:layout_width="@dimen/margin_start_txt_intro"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_add_to_list"
+        app:layout_constraintBottom_toBottomOf="@+id/btnFav"
+        app:layout_constraintEnd_toStartOf="@+id/btnTimer"
+        app:layout_constraintStart_toEndOf="@+id/btnFav"
+        app:tint="@color/color_grey" />
+
+    <ImageButton
+        android:id="@+id/btnTimer"
+        android:layout_width="@dimen/margin_start_txt_intro"
+        android:layout_height="@dimen/margin_start_txt_intro"
+        android:layout_gravity="center"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_timer_off"
+        app:layout_constraintBottom_toBottomOf="@+id/btnFav"
+        app:layout_constraintEnd_toEndOf="@+id/seekBarSong"
+        app:tint="@color/color_grey" />
 
     <ImageButton
         android:id="@+id/btnPrev"
-        android:layout_width="@dimen/size_secondary_btn_current_song"
-        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:layout_width="@dimen/size_secondary_btn_current_song_smaller"
+        android:layout_height="@dimen/size_secondary_btn_current_song_smaller"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/ic_prev"
@@ -202,12 +265,12 @@
         app:layout_constraintEnd_toStartOf="@+id/imageButtonWrapper"
         app:layout_constraintStart_toEndOf="@+id/btnReplayMode"
         app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
-        app:tint="@color/deep_aqua" />
+        app:tint="@color/color_grey" />
 
     <ImageButton
         android:id="@+id/btnReplayMode"
-        android:layout_width="@dimen/size_secondary_btn_current_song"
-        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:layout_width="@dimen/size_secondary_btn_current_song_smaller"
+        android:layout_height="@dimen/size_secondary_btn_current_song_smaller"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/ic_rep_all"
@@ -215,54 +278,54 @@
         app:layout_constraintEnd_toStartOf="@+id/guideline12"
         app:layout_constraintStart_toStartOf="@+id/guideline12"
         app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
-        app:tint="@color/deep_aqua" />
+        app:tint="@color/color_grey" />
 
     <ImageButton
         android:id="@+id/btnNext"
-        android:layout_width="@dimen/size_secondary_btn_current_song"
-        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:layout_width="@dimen/size_secondary_btn_current_song_smaller"
+        android:layout_height="@dimen/size_secondary_btn_current_song_smaller"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/ic_next"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonWrapper"
-        app:layout_constraintEnd_toStartOf="@+id/btnTimer"
+        app:layout_constraintEnd_toStartOf="@+id/btnShowCurrentList"
         app:layout_constraintStart_toEndOf="@+id/imageButtonWrapper"
         app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
-        app:tint="@color/deep_aqua" />
+        app:tint="@color/color_grey" />
+
 
     <ImageButton
-        android:id="@+id/btnTimer"
-        android:layout_width="@dimen/size_secondary_btn_current_song"
-        android:layout_height="@dimen/size_secondary_btn_current_song"
+        android:layout_marginTop="@dimen/elevation_low_shadow"
+        android:id="@+id/btnShowCurrentList"
+        android:layout_width="@dimen/size_secondary_btn_current_song_smaller"
+        android:layout_height="@dimen/size_secondary_btn_current_song_smaller"
         android:background="@android:color/transparent"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_timer_off"
+        android:src="@drawable/ic_current_list"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonWrapper"
         app:layout_constraintEnd_toStartOf="@+id/guideline13"
         app:layout_constraintStart_toStartOf="@+id/guideline13"
         app:layout_constraintTop_toTopOf="@+id/imageButtonWrapper"
-        app:tint="@color/deep_aqua" />
+        app:tint="@color/color_grey" />
 
     <SeekBar
-        android:scaleX="1.1"
         android:id="@+id/seekBarSong"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:progressBackgroundTint="@color/black"
-        android:progressTint="@color/ocean"
-        android:thumbTint="@color/deep_aqua"
+        android:progressTint="@color/color_grey"
+        android:scaleX="1.1"
+        android:thumbTint="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/guideline15"
-        app:layout_constraintEnd_toEndOf="@+id/btnTimer"
-        app:layout_constraintStart_toStartOf="@+id/btnReplayMode"
-        app:layout_constraintTop_toTopOf="@+id/guideline4"
-        app:layout_constraintVertical_bias="0.65" />
+        app:layout_constraintEnd_toEndOf="@+id/btnShowCurrentList"
+        app:layout_constraintStart_toStartOf="@+id/btnReplayMode" />
 
     <TextView
         android:id="@+id/txtSongProgress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
-        android:textColor="@color/deep_aqua"
+        android:textColor="@color/color_grey"
         app:layout_constraintStart_toStartOf="@+id/seekBarSong"
         app:layout_constraintTop_toBottomOf="@+id/seekBarSong" />
 
@@ -271,7 +334,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="00:00"
-        android:textColor="@color/deep_aqua"
+        android:textColor="@color/color_grey"
         app:layout_constraintEnd_toEndOf="@+id/seekBarSong"
         app:layout_constraintTop_toBottomOf="@+id/seekBarSong" />
 
@@ -284,22 +347,5 @@
         app:layout_constraintGuide_percent="0.065"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="@dimen/size_pause_current_song"
-        android:layout_height="@dimen/margin_start_txt_intro"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="@dimen/bottom_item_size"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintStart_toStartOf="@+id/guideline3"
-        app:layout_constraintTop_toTopOf="@+id/guideline17">
 
-        <ImageButton
-            android:id="@+id/btnFav"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#B5FFFFFF"
-            android:src="@drawable/ic_fav"
-            app:tint="@color/dark_grey" />
-    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,32 +2,34 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@color/white"
+    android:background="@color/darker_grey"
+    android:id="@+id/backgrEmpty"
     style="@style/Platform.MaterialComponents.Light"
     android:layout_height="match_parent">
 
     <ImageView
-        android:src="@android:drawable/ic_dialog_info"
+        android:padding="@dimen/elevation_low_shadow"
+        android:src="@drawable/ic_heart_broken"
         android:id="@+id/imgEmpty"
-        android:layout_width="@dimen/img_empty_size"
-        android:layout_height="@dimen/img_empty_size"
+        android:layout_width="@dimen/recycler_pos_margin"
+        android:layout_height="@dimen/recycler_pos_margin"
         android:alpha="0.5"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
+        app:tint="@color/white" />
 
     <TextView
         android:id="@+id/txtEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0.5"
-        android:fontFamily="@font/ubuntu"
-        android:text="You don't have any song yet\ntry adding one\n or check for app's permission"
+        android:fontFamily="@font/rail_med"
+        android:text="Nothing to see"
         android:textAlignment="center"
-        android:textColor="@color/black"
-        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/txt_empty_list_size"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"

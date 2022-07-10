@@ -1,7 +1,6 @@
 package com.example.music.fragment;
 
 import android.annotation.SuppressLint;
-import android.database.Cursor;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import com.example.music.GlobalMediaPlayer;
 import com.example.music.R;
 import com.example.music.adapter.SongListAdapter;
-import com.example.music.database.PlaylistDb;
 import com.example.music.listener.OnFavSongFragmentInteractionListener;
 import com.example.music.models.Song;
 import com.example.music.utils.GlobalListener;
@@ -42,16 +40,17 @@ public class FavSongFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         mediaPlayer = GlobalMediaPlayer.getInstance();
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         initFavSongList();
     }
 
     private void initFavSongList() {
-        favSongList = mediaPlayer.getFavSongList(requireContext());
-        PlaylistDb favSongDb = new PlaylistDb(requireContext(), "favSong.db", null, 1);
-        favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(200))");
-
-        Cursor data = favSongDb.getData(TABLE_NAME);
-
+        favSongList = mediaPlayer.getFavSongList();
         mediaPlayer.setVisualSongList(favSongList);
     }
 
@@ -65,23 +64,20 @@ public class FavSongFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void initListener() {
-        GlobalListener.MusicFragment.listener.addRecyclerMoveListener(recyclerFavSong);
+        GlobalListener.LocalSongFragment.listener.addRecyclerMoveListener(recyclerFavSong);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                GlobalListener.MainActivity.listener.hideFavSongFragment();
+                GlobalListener.MainActivity.listener.doBackPress();
             }
         });
-        favSongFragmentInteractionListener = new OnFavSongFragmentInteractionListener() {
-            @SuppressLint("NotifyDataSetChanged")
-            @Override
-            public void notifyDataSetChange(int pos) {
-                if (pos != -1) {
-                    adapter.notifyItemRemoved(pos);
-                } else {
-                    adapter.notifyDataSetChanged();
-                }
+        favSongFragmentInteractionListener = pos -> {
+            if (pos != -1) {
+                adapter.notifyItemRemoved(pos);
+            } else {
+                adapter.notifyDataSetChanged();
             }
         };
         GlobalListener.FavSongFragment.listener = favSongFragmentInteractionListener;
@@ -90,17 +86,17 @@ public class FavSongFragment extends Fragment {
             if (favSongList.size() > 0) {
                 mediaPlayer.renewPlayingSongList();
                 SongUtils.shuffleModeOn();
-                mediaPlayer.playSong(mediaPlayer.getPlayingSongList().get((int) (Math.random() * (mediaPlayer.getPlayingSongList().size() - 1))),requireContext());
+                mediaPlayer.playSong(mediaPlayer.getPlayingSongList().get((int) (Math.random() * (mediaPlayer.getPlayingSongList().size() ))),requireContext());
             }
         });
     }
 
     private void mapping(View view) {
-        btnBack = view.findViewById(R.id.btnBackFromFavSongFrag);
+        btnBack = view.findViewById(R.id.btnBackFromPlaylistFrag);
         btnPlayRandomly = view.findViewById(R.id.btnPlayRandomlyFavSong);
         recyclerFavSong = view.findViewById(R.id.recyclerFavSong);
 
-        adapter = new SongListAdapter(requireContext(), R.layout.row_song, recyclerFavSong,this);
+        adapter = new SongListAdapter(requireContext(), R.layout.row_song, recyclerFavSong,this,null);
         recyclerFavSong.setAdapter(adapter);
     }
 

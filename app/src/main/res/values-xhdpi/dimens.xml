@@ -5,7 +5,7 @@
 	<dimen name="img_album_size">12.5dp</dimen>
 	<dimen name="img_album_margin_start">3.5dp</dimen>
 	<dimen name="txt_title_margin">2.5dp</dimen>
-	<dimen name="txt_title_size">12sp</dimen>
+	<dimen name="txt_title_size">10sp</dimen>
 	<dimen name="txt_song_desc_size">7.8sp</dimen>
 	<dimen name="txt_song_dur_size">9sp</dimen>
 	<dimen name="bottom_item_size">19dp</dimen>

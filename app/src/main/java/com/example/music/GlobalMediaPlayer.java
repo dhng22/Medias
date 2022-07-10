@@ -16,7 +16,10 @@ import android.os.Handler;
 
 import androidx.annotation.Nullable;
 
+import com.example.music.bottomSheet.CurrentPlayingListBottomSheet;
 import com.example.music.database.PlaylistDb;
+import com.example.music.fragment.RecentSongFragment;
+import com.example.music.models.Playlist;
 import com.example.music.models.Song;
 import com.example.music.service.PlaySongService;
 import com.example.music.utils.GlobalListener;
@@ -37,7 +40,9 @@ public class GlobalMediaPlayer {
 
     private static final GlobalMediaPlayer globalMediaPlayer = new GlobalMediaPlayer();
     private int currentSongPlayingPosition = -1;
-    private static ArrayList<Song> playingSongList, visualSongList, baseSongList, favSongList;
+    private static ArrayList<Song> playingSongList, visualSongList, baseSongList, favSongList, recentList;
+    private static ArrayList<Playlist> songPlayList;
+    private static ArrayList<String> tableNames;
 
     private MediaPlayer mediaPlayer;
     private Song currentSong;
@@ -46,8 +51,7 @@ public class GlobalMediaPlayer {
     private Runnable updateSeekBarRunnable;
     ObjectAnimator animIncreaseSeekBar, animResetSeekBar;
     Handler updateSeekBarHandler, helperHandler;
-    private boolean isGoingUp;
-
+    PlaylistDb recentSongDb;
     private GlobalMediaPlayer() {
         initVar();
         initListener();
@@ -103,13 +107,58 @@ public class GlobalMediaPlayer {
     public void initFavSong(Context context) {
         favSongList = new ArrayList<>();
         PlaylistDb favSongDb = new PlaylistDb(context, "favSong.db", null, 1);
-        favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(200))");
+        favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
 
         Cursor data = favSongDb.getData(TABLE_NAME);
         while (data.moveToNext()) {
-            Song song = getSongByKeyword(data.getString(1));
-            song.isFavorite = true;
-            favSongList.add(song);
+            String songPath = data.getString(1);
+            Song song = getSongByPath(songPath);
+            if (song != null) {
+                song.isFavorite = true;
+                favSongList.add(song);
+            } else {
+                song = new Song(songPath);
+                favSongDb.removeFavSongFromTable(song, TABLE_NAME,context);
+            }
+        }
+    }
+
+    public void initRecentList(Context context) {
+        recentList = new ArrayList<>();
+        recentSongDb = new PlaylistDb(context, "recentSong.db", null, 1);
+        recentSongDb.queryData("CREATE TABLE IF NOT EXISTS recentSong(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
+
+        Cursor recentTable = recentSongDb.getData("recentSong");
+        while (recentTable.moveToNext()) {
+            String songPath = recentTable.getString(1);
+            Song song = getSongByPath(songPath);
+            if (song != null) {
+                recentList.add(song);
+            } else {
+                song = new Song(songPath);
+                recentSongDb.removeSongFromRecent(song,GlobalListener.SongListAdapter.listener.getParentFragment());
+            }
+        }
+        Collections.reverse(recentList);
+    }
+    public void initPlayList(Context context) {
+        songPlayList = new ArrayList<>();
+        PlaylistDb playlistSongDb = new PlaylistDb(context, "playlistSong.db", null, 1);
+        tableNames = playlistSongDb.getTablesName();
+        for (String tabName :
+                tableNames) {
+            Cursor playlistCursor = playlistSongDb.getData(tabName);
+            ArrayList<Song> songsInList = new ArrayList<>();
+            while (playlistCursor.moveToNext()) {
+                String songPath = playlistCursor.getString(1);
+                Song song = getSongByPath(songPath);
+                if (song != null) {
+                    songsInList.add(song);
+                } else {
+                    playlistSongDb.queryData("DELETE FROM '" + tabName + "' WHERE name ='" + songPath + "'");
+                }
+            }
+            songPlayList.add(new Playlist(tabName, songsInList));
         }
     }
     public void initOldSong(Context context) {
@@ -117,8 +166,8 @@ public class GlobalMediaPlayer {
             sharedPreferences = context.getSharedPreferences("appdata", Context.MODE_PRIVATE);
             editor = sharedPreferences.edit();
         }
-        int currentSongId = sharedPreferences.getInt("currentSong", -1);
-        setCurrentSongById(currentSongId);
+        String currentSongPath = sharedPreferences.getString("currentSong", null);
+        setCurrentSongByPath(currentSongPath);
 
         int currentDur = sharedPreferences.getInt("currentDur", -1);
         setCurrentSongPlayingPosition(currentDur);
@@ -137,6 +186,7 @@ public class GlobalMediaPlayer {
                 if (GlobalListener.MainActivity.listener.getNavigationProgressBarProgress() == 0) {
                     GlobalListener.MainActivity.listener.setNavigationProgressBarMax((int) getCurrentSongDuration());
                     GlobalListener.MainActivity.listener.setNavigationProgressBarProgress(currentDur);
+                    GlobalListener.MainActivity.listener.validateFavButton();
                 }
                 helperHandler.postDelayed(() -> GlobalListener.PlaySongService.listener.reloadNotificationMediaState(), 100);
             }
@@ -154,9 +204,12 @@ public class GlobalMediaPlayer {
 
 
     public void playSong(Song songToPlay, Context context) {
+        if (recentSongDb == null) {
+            recentSongDb = new PlaylistDb(context, "recentSong.db", null, 1);
+        }
+        recentSongDb.addSongToRecent(songToPlay,GlobalListener.SongListAdapter.listener.getParentFragment());
         reset();
-        int currentSongIn = getVisualSongIndex();
-
+        resetNavigationSeekBar();
         if (currentSong != null) {
             if (currentSong.getCurrentState() == Song.PLAYING_STATE) {
                 currentSong.setCurrentState(Song.NORMAL_STATE);
@@ -169,14 +222,16 @@ public class GlobalMediaPlayer {
         mediaPlayer = MediaPlayer.create(context, Uri.parse(songToPlay.path));
         addMediaPlayerListener(context);
         mediaPlayer.start();
-        editor.putInt("currentSong", songToPlay.id);
+        editor.putString("currentSong", songToPlay.path);
         editor.commit();
 
-        GlobalListener.SongListAdapter.listener.onNewSongPlaying(currentSong, songToPlay);
+        if (!(GlobalListener.SongListAdapter.listener.getParentFragment() instanceof RecentSongFragment)) {
+            GlobalListener.SongListAdapter.listener.onNewSongPlaying(currentSong, songToPlay);
+        }
         currentSong = songToPlay;
 
-        int newSongIn = getVisualSongIndex();
-        isGoingUp = (newSongIn - currentSongIn) < 0;
+        GlobalListener.MainActivity.listener.validateFavButton();
+
         Intent intent = new Intent(context, PlaySongService.class);
         context.startService(intent);
 
@@ -189,7 +244,7 @@ public class GlobalMediaPlayer {
     public void pauseSong(Context context) {
         if (mediaPlayer != null) {
             editor.putInt("currentDur", getCurrentSongPlayingPosition());
-            editor.putInt("currentSong", getCurrentSong().id);
+            editor.putString("currentSong", getCurrentSong().path);
             editor.commit();
             mediaPlayer.pause();
 
@@ -212,7 +267,6 @@ public class GlobalMediaPlayer {
     }
 
     public void prevSong(Context context) {
-        resetNavigationSeekBar();
         editor.putInt("currentDur", -1);
         editor.commit();
         currentSongPlayingPosition = -1;
@@ -229,7 +283,7 @@ public class GlobalMediaPlayer {
             playSong(newSong, context);
         }
 
-        editor.putInt("currentSong", currentSong.id);
+        editor.putString("currentSong", currentSong.path);
         editor.commit();
         GlobalListener.MainActivity.listener.validateFavButton();
         if (GlobalListener.CurrentSongActivity.listener != null) {
@@ -239,19 +293,23 @@ public class GlobalMediaPlayer {
     }
 
     public void nextSong(Context context) {
-        resetNavigationSeekBar();
         editor.putInt("currentDur", -1);
         editor.commit();
         currentSongPlayingPosition = -1;
 
         int currentSongIndex = getCurrentSongIndex();
-        Song newSong;
+        Song newSong = null;
 
         if (currentSongIndex == playingSongList.size() - 1) {
             if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_SHUFFLE) {
                 shuffleModeOn();
+                if (GlobalListener.SongListAdapter.listener.getParentFragment() instanceof CurrentPlayingListBottomSheet) {
+                    GlobalListener.SongListAdapter.listener.notifyDataSet();
+                }
             }
-            newSong = playingSongList.get(0);
+            if (playingSongList.size() > 0) {
+                newSong = playingSongList.get(0);
+            }
             reset();
             playSong(newSong, context);
 
@@ -261,7 +319,7 @@ public class GlobalMediaPlayer {
             playSong(newSong, context);
         }
 
-        editor.putInt("currentSong", currentSong.id);
+        editor.putString("currentSong", currentSong.path);
         editor.commit();
         GlobalListener.MainActivity.listener.validateFavButton();
         if (GlobalListener.CurrentSongActivity.listener != null) {
@@ -273,7 +331,7 @@ public class GlobalMediaPlayer {
     public void stopSong() {
         if (mediaPlayer != null) {
             editor.putInt("currentDur", getCurrentSongPlayingPosition());
-            editor.putInt("currentSong", currentSong.id);
+            editor.putString("currentSong", currentSong.path);
             editor.commit();
             mediaPlayer.pause();
             mediaPlayer.release();
@@ -300,9 +358,12 @@ public class GlobalMediaPlayer {
     public void renewPlayingSongList() {
         playingSongList = new ArrayList<>(visualSongList);
     }
+    public void resetPlayingSongList() {
+        playingSongList = new ArrayList<>(baseSongList);
+    }
 
     public void shuffleModeOn() {
-        if (visualSongList.size() > 0) {
+        if (playingSongList.size() > 0) {
             if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_SHUFFLE) {
                 Collections.shuffle(playingSongList);
             }
@@ -357,7 +418,6 @@ public class GlobalMediaPlayer {
 
     private void addMediaPlayerListener(Context context) {
         mediaPlayer.setOnCompletionListener(mp -> {
-            resetNavigationSeekBar();
             if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_REPEAT_ONE) {
                 repeatSong(context);
             } else {
@@ -366,15 +426,19 @@ public class GlobalMediaPlayer {
         });
     }
 
-
-    public boolean isGoingUp() {
-        return isGoingUp;
-    }
-
     public boolean isPlaying() {
         return mediaPlayer != null && mediaPlayer.isPlaying();
     }
 
+    public boolean isThisTableExist(String tableName) {
+        for (Playlist p :
+                songPlayList) {
+            if (p.getListName().equals(tableName)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public int getPlayerState() {
         if (mediaPlayer == null) {
             return NULL_STATE;
@@ -395,7 +459,26 @@ public class GlobalMediaPlayer {
         }
         return -1;
     }
+    public int getSongIndexFromVisualList(Song song) {
+        if (song != null) {
+            for (int i = 0; i < visualSongList.size(); i++) {
+                if (song.id == visualSongList.get(i).id) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
 
+    public int getListIndexFromVisualPlaylist(Playlist playlist) {
+        for (int i = 0; i < songPlayList.size(); i++) {
+            Playlist list = songPlayList.get(i);
+            if (list.getListName().equals(playlist.getListName())) {
+                return i;
+            }
+        }
+        return -1;
+    }
     public int getCurrentSongIndex() {
         if (currentSong != null) {
             for (int i = 0; i < playingSongList.size(); i++) {
@@ -416,19 +499,21 @@ public class GlobalMediaPlayer {
     }
 
     public Song getSongById(int id) {
-        for (int i = 0; i < visualSongList.size(); i++) {
-            Song song = visualSongList.get(i);
-            if (id == song.id) {
-                return song;
+        if (baseSongList != null) {
+            for (int i = 0; i < baseSongList.size(); i++) {
+                Song song = baseSongList.get(i);
+                if (id == song.id) {
+                    return song;
+                }
             }
         }
         return null;
     }
 
-    public Song getSongByKeyword(String key) {
+    public Song getSongByPath(String path) {
         for (Song song :
                 baseSongList) {
-            if (song.songName.contains(key)) {
+            if (song.path.equals(path)) {
                 return song;
             }
         }
@@ -438,24 +523,39 @@ public class GlobalMediaPlayer {
     public Song getSongAt(int index) {
         return visualSongList.get(index);
     }
-
     public Song getCurrentSong() {
         return currentSong;
     }
-
+    public ArrayList<Playlist> getSongPlayList() {
+        return songPlayList;
+    }
+    public Playlist getPlaylistByName(String playListName) {
+        for (Playlist p :
+                songPlayList) {
+            if (p.getListName().equals(playListName)) {
+                return p;
+            }
+        }
+        return null;
+    }
     public ArrayList<Song> getPlayingSongList() {
         return playingSongList;
     }
 
-    public ArrayList<Song> getFavSongList(Context context) {
-        initFavSong(context);
+    public ArrayList<Song> getRecentSongList(Context context) {
+        if (recentList == null) {
+            initRecentList(context);
+        }
+        return recentList;
+    }
+    public ArrayList<Song> getFavSongList() {
         return favSongList;
     }
-    public ArrayList<Song> getBaseSongList() {
+    public ArrayList<Song> getVisualSongList() {
         return visualSongList;
     }
 
-    public ArrayList<Song> getBaseBaseSongList() {
+    public ArrayList<Song> getBaseSongList() {
         return baseSongList;
     }
 
@@ -471,17 +571,27 @@ public class GlobalMediaPlayer {
         currentSong = getSongById(id);
     }
 
+    public void setCurrentSongByPath(String path) {
+        currentSong = getSongByPath(path);
+    }
+
     public void setCurrentSong(Song currentSong) {
         this.currentSong = currentSong;
     }
 
-    public void setPlayingSongList(@Nullable ArrayList<Song> currentSongList) {
+    public void setPlayingSongList(@Nullable ArrayList<Song> currentSongList,boolean wantToShuffle) {
         if (currentSongList != null) {
-            GlobalMediaPlayer.playingSongList = currentSongList;
+            GlobalMediaPlayer.playingSongList = new ArrayList<>(currentSongList);
+            if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_SHUFFLE) {
+                if (wantToShuffle) {
+                    shuffleModeOn();
+                }
+            }
         }
     }
 
     public void setVisualSongList(ArrayList<Song> baseSongList) {
         GlobalMediaPlayer.visualSongList = baseSongList;
     }
+
 }
