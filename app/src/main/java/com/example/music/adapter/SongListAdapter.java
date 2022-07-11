@@ -141,7 +141,6 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     mediaPlayer.reset();
                     mediaPlayer.playSong(clickedSong,context);
 
-                    Log.e("TAG", "onItemClick: "+clickedSong);
                     mediaPlayer.setCurrentSong(clickedSong);
                     if (!(parentFragment instanceof ParticularPlaylistBottomSheet) && !(parentFragment instanceof RecentSongFragment) &&!(parentFragment instanceof CurrentPlayingListBottomSheet)) {
                         GlobalListener.MainActivity.listener.openCurrentSongActivity();
