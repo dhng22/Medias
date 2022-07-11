@@ -40,7 +40,7 @@ public class GlobalMediaPlayer {
 
     private static final GlobalMediaPlayer globalMediaPlayer = new GlobalMediaPlayer();
     private int currentSongPlayingPosition = -1;
-    private static ArrayList<Song> playingSongList, visualSongList, baseSongList, favSongList, recentList;
+    private static ArrayList<Song> playingSongList, visualSongList, baseSongList, favSongList, recentList,baseVideoList;
     private static ArrayList<Playlist> songPlayList;
     private static ArrayList<String> tableNames;
 
@@ -203,6 +203,9 @@ public class GlobalMediaPlayer {
     }
 
 
+    public void initVideoList(ArrayList<String> videosPath) {
+
+    }
     public void playSong(Song songToPlay, Context context) {
         if (recentSongDb == null) {
             recentSongDb = new PlaylistDb(context, "recentSong.db", null, 1);
@@ -558,6 +561,9 @@ public class GlobalMediaPlayer {
     public ArrayList<Song> getBaseSongList() {
         return baseSongList;
     }
+    public static ArrayList<Song> getBaseVideoList() {
+        return baseVideoList;
+    }
 
     public static GlobalMediaPlayer getInstance() {
         return globalMediaPlayer;
@@ -592,6 +598,10 @@ public class GlobalMediaPlayer {
 
     public void setVisualSongList(ArrayList<Song> baseSongList) {
         GlobalMediaPlayer.visualSongList = baseSongList;
+    }
+
+    public static void setBaseVideoList(ArrayList<Song> baseVideoList) {
+        GlobalMediaPlayer.baseVideoList = baseVideoList;
     }
 
 }

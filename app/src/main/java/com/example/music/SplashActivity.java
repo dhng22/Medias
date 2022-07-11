@@ -105,6 +105,7 @@ public class SplashActivity extends AppCompatActivity {
 
         retrieveMusicService = new Intent(this, RetrieveMusicService.class);
         retrieveMusicService.putExtra("musics", musics);
+        retrieveMusicService.putExtra("type", ".mp3");
 
         broadcastManager = LocalBroadcastManager.getInstance(this);
         musicReceiver = new BroadcastReceiver() {
@@ -119,7 +120,7 @@ public class SplashActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.anim_nothing, R.anim.anim_fade_out);
             }
         };
-        broadcastManager.registerReceiver(musicReceiver, new IntentFilter(RetrieveMusicService.ACTION_RETRIEVE));
+        broadcastManager.registerReceiver(musicReceiver, new IntentFilter(RetrieveMusicService.ACTION_RETRIEVE_MUSIC));
 
         permissionAsked = sharedPreferences.getBoolean("permissionAsked", false);
     }

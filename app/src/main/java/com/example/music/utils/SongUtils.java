@@ -1,8 +1,13 @@
 package com.example.music.utils;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.example.music.GlobalMediaPlayer;
 import com.example.music.models.Song;
 
 public class SongUtils {
+    static SharedPreferences sharedPreferences;
+    static SharedPreferences.Editor editor;
     public static String getFormattedDuration(long duration) {
         return String.format("%02d:%02d", duration / 1000 / 60, duration / 1000 % 60);
     }
@@ -13,7 +18,7 @@ public class SongUtils {
         }
 
         if (GlobalListener.MainActivity.listener != null) {
-            GlobalListener.MainActivity.listener .validatePlayPauseButton();
+            GlobalListener.MainActivity.listener.validatePlayPauseButton();
         }
 
         if (GlobalListener.CurrentSongActivity.listener != null) {
@@ -47,6 +52,7 @@ public class SongUtils {
             GlobalListener.CurrentPlayingListBottomSheet.listener.validateRepMode();
         }
     }
+
     public static void onSongFavClicked(Song song, int pos) {
         if (GlobalListener.MainActivity.listener != null) {
             GlobalListener.MainActivity.listener.onFavButtonClicked(song);
@@ -58,5 +64,11 @@ public class SongUtils {
         if (GlobalListener.FavSongFragment.listener != null) {
             GlobalListener.FavSongFragment.listener.notifyDataSetChange(pos);
         }
+    }
+
+    public static void setCurrentSong(Context context, Song song) {
+        sharedPreferences = context.getSharedPreferences("appdata", Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        editor.putString("currentSong", song.songName);
     }
 }

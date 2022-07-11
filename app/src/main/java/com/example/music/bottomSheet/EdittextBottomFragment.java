@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +21,7 @@ import com.example.music.database.PlaylistDb;
 import com.example.music.models.Playlist;
 import com.example.music.models.Song;
 import com.example.music.utils.GlobalListener;
+import com.example.music.utils.SongUtils;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -87,13 +90,27 @@ public class EdittextBottomFragment extends BottomSheetDialogFragment {
                 if (song != null) {
                     File fileToRename = new File(song.path);
 
-                    String renameTo = song.path.replace(song.songName, edtRename.getText().toString().trim());
-                    playlistDb.updateSongPath(song,renameTo);
-                    fileToRename.renameTo(new File(renameTo));
+                    String toPath = song.path.replace(song.songName, edtRename.getText().toString().trim());
+                    playlistDb.updateSongPath(song, toPath);
 
-                    song.songName = edtRename.getText().toString();
-                    song.path = renameTo;
+                    File renameToTemp = new File( song.path.replace(song.songName, "yziscdqweqwzxcs"));
+                    fileToRename.renameTo(renameToTemp);
 
+                    File renameToDes = new File(toPath);
+                    renameToTemp.renameTo(renameToDes);
+
+                    song.songName = edtRename.getText().toString().trim();
+                    song.path = toPath;
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.e("TAG", "initListener: " + song.path);
+                        }
+                    }, 300);
+                    if (mediaPlayer.getCurrentSong().equals(song)) {
+                        SongUtils.setCurrentSong(requireContext(), song);
+                    }
                     GlobalListener.SongListAdapter.listener.notifySongAt(mediaPlayer.getVisualSongList().indexOf(song));
 
                     if (GlobalListener.CurrentSongActivity.listener != null) {

@@ -23,7 +23,7 @@ import com.example.music.GlobalMediaPlayer;
 import com.example.music.MainActivity;
 import com.example.music.MyApplication;
 import com.example.music.R;
-import com.example.music.listener.OnNotificationSeekBarChange;
+import com.example.music.callbacks.OnNotificationSeekBarChange;
 import com.example.music.listener.OnPlaySongServiceInteractionListener;
 import com.example.music.models.Song;
 import com.example.music.receiver.MusicActionReceiver;

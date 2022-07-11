@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.example.music.adapter.ViewPagerAdapter;
 import com.example.music.database.PlaylistDb;
@@ -31,6 +32,7 @@ import com.example.music.fragment.FavSongFragment;
 import com.example.music.fragment.LocalSongFragment;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.models.Song;
+import com.example.music.service.RetrieveMusicService;
 import com.example.music.utils.GlobalListener;
 import com.example.music.utils.SongUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -52,11 +54,13 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar songProgress;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    BroadcastReceiver stopActivityReceiver;
+    BroadcastReceiver stopActivityReceiver, retrieveVideoReceiver;
     LocalBroadcastManager broadcastManager;
     GlobalMediaPlayer mediaPlayer;
     OnMainActivityInteractionListener listener;
     PlaylistDb favSongDb, recentSongDb;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -305,6 +309,14 @@ public class MainActivity extends AppCompatActivity {
                 finishAndRemoveTask();
             }
         };
+        retrieveVideoReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                ArrayList<String> videosPath = (ArrayList<String>) intent.getSerializableExtra("musics");
+                mediaPlayer.initVideoList(videosPath);
+            }
+        };
+        broadcastManager.registerReceiver(retrieveVideoReceiver,new IntentFilter(RetrieveMusicService.ACTION_RETRIEVE_VIDEO));
         broadcastManager.registerReceiver(stopActivityReceiver, new IntentFilter(ACTION_STOP_ACTIVITY));
     }
 
