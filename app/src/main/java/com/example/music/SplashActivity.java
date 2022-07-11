@@ -1,5 +1,7 @@
 package com.example.music;
 
+import static com.example.music.database.VideoDb.TABLE_NAME;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -21,25 +23,34 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 
+import com.example.music.database.VideoDb;
+import com.example.music.models.Song;
+import com.example.music.models.Video;
 import com.example.music.service.RetrieveMusicService;
+import com.example.music.service.RetrieveVideoPathService;
+import com.example.music.service.RetrieveVideoService;
 
 import java.util.ArrayList;
 
 
 @SuppressLint("CustomSplashScreen")
 public class SplashActivity extends AppCompatActivity {
-    ArrayList<String> musics;
+    ArrayList<Song> musics;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    Intent retrieveMusicService;
+    Intent retrieveMusicService, retrieveVideoService, retrieveVideoFromDbService, retrieveVideoPathService;
     LocalBroadcastManager broadcastManager;
     BroadcastReceiver musicReceiver;
+    GlobalMediaPlayer mediaPlayer;
     boolean permissionAsked;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getWindow().setStatusBarColor(getColor(R.color.darker_grey));
         setContentView(R.layout.activity_splash);
+        mediaPlayer = GlobalMediaPlayer.getInstance();
+
+
         init();
     }
 
@@ -64,15 +75,24 @@ public class SplashActivity extends AppCompatActivity {
                             permissionAsked = true;
                             editor.putBoolean("permissionAsked", true);
                             dialogInterface.cancel();
+                            startService(retrieveVideoPathService);
                             startService(retrieveMusicService);
+                            startService(retrieveVideoFromDbService);
+                            startService(retrieveVideoService);
                         }).create();
                 permissionDialog.setCanceledOnTouchOutside(false);
                 permissionDialog.show();
             } else if (ContextCompat.checkSelfPermission(getApplicationContext(), Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
+                startService(retrieveVideoPathService);
                 startService(retrieveMusicService);
+                startService(retrieveVideoFromDbService);
+                startService(retrieveVideoService);
             }
         } else {
+            startService(retrieveVideoPathService);
             startService(retrieveMusicService);
+            startService(retrieveVideoFromDbService);
+            startService(retrieveVideoService);
         }
     }
 
@@ -80,7 +100,10 @@ public class SplashActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
+                    startService(retrieveVideoPathService);
                     startService(retrieveMusicService);
+                    startService(retrieveVideoFromDbService);
+                    startService(retrieveVideoService);
                 }
             });
     private void askForPermission() {
@@ -104,16 +127,20 @@ public class SplashActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
 
         retrieveMusicService = new Intent(this, RetrieveMusicService.class);
-        retrieveMusicService.putExtra("musics", musics);
+        retrieveVideoService = new Intent(this, RetrieveMusicService.class);
+        retrieveVideoFromDbService = new Intent(this, RetrieveVideoService.class);
+        retrieveVideoPathService = new Intent(this, RetrieveVideoPathService.class);
         retrieveMusicService.putExtra("type", ".mp3");
+        retrieveVideoService.putExtra("type", ".mp4");
 
         broadcastManager = LocalBroadcastManager.getInstance(this);
+
         musicReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                musics = (ArrayList<String>) intent.getSerializableExtra("musics");
+                musics = (ArrayList<Song>) intent.getSerializableExtra("musics");
+                mediaPlayer.initSong(musics,getApplicationContext());
                 Intent intent1 = new Intent(SplashActivity.this, MainActivity.class);
-                intent1.putExtra("musics", musics);
                 intent1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 broadcastManager.unregisterReceiver(this);
                 startActivity(intent1);

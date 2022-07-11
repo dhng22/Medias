@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,9 +21,9 @@ import com.example.music.utils.GlobalListener;
 import java.io.File;
 import java.util.ArrayList;
 
-public class PlaylistDb extends SQLiteOpenHelper {
+public class MusicDb extends SQLiteOpenHelper {
     GlobalMediaPlayer mediaPlayer;
-    public PlaylistDb(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+    public MusicDb(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, factory, version);
         mediaPlayer = GlobalMediaPlayer.getInstance();
     }
@@ -46,8 +45,8 @@ public class PlaylistDb extends SQLiteOpenHelper {
     }
 
     public void updateSongFromFav(Song song, String pathToUpdate) {
-        PlaylistDb playlistDb = new PlaylistDb(song.context, "favSong.db", null, 1);
-        playlistDb.queryData("UPDATE '" + FavSongFragment.TABLE_NAME + "' SET name = '" + pathToUpdate + "' WHERE name = '" + song.path + "'");
+        MusicDb musicDb = new MusicDb(song.context, "favSong.db", null, 1);
+        musicDb.queryData("UPDATE '" + FavSongFragment.TABLE_NAME + "' SET name = '" + pathToUpdate + "' WHERE name = '" + song.path + "'");
     }
     public void addFavoriteSongToTable(Song song, String tableName, Context context) {
         ArrayList<Song> favList =mediaPlayer.getFavSongList();

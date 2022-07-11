@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.music.R;
-import com.example.music.database.PlaylistDb;
+import com.example.music.database.MusicDb;
 import com.example.music.models.Playlist;
 import com.example.music.models.Song;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -27,7 +27,7 @@ public class DeleteFragment extends BottomSheetDialogFragment {
     private Song song;
     private int pos;
 
-    PlaylistDb playlistDb;
+    MusicDb musicDb;
     private DeleteFragment() {
         // Required empty public constructor
     }
@@ -46,7 +46,7 @@ public class DeleteFragment extends BottomSheetDialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        playlistDb = new PlaylistDb(requireContext(), "playlistSong.db", null, 1);
+        musicDb = new MusicDb(requireContext(), "playlistSong.db", null, 1);
         Bundle bundle = getArguments();
         if (bundle != null) {
             this.playlist = (Playlist) bundle.getSerializable("playlist");
@@ -78,9 +78,9 @@ public class DeleteFragment extends BottomSheetDialogFragment {
             @Override
             public void onClick(View v) {
                 if (action == ACTION_DELETE_LIST) {
-                    playlistDb.deletePlayList(playlist,pos);
+                    musicDb.deletePlayList(playlist,pos);
                 } else if (action == ACTION_DELETE_SONG) {
-                    playlistDb.deleteSong(song);
+                    musicDb.deleteSong(song);
                 }
                 dismiss();
             }

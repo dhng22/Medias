@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +19,7 @@ import com.example.music.bottomSheet.EdittextBottomFragment;
 import com.example.music.bottomSheet.ParticularPlaylistBottomSheet;
 import com.example.music.bottomSheet.PlaylistBottomSheet;
 import com.example.music.bottomSheet.PlaylistOptionBottomSheet;
-import com.example.music.database.PlaylistDb;
+import com.example.music.database.MusicDb;
 import com.example.music.fragment.PlaylistFragment;
 import com.example.music.listener.OnSongPlaylistInteractionListener;
 import com.example.music.models.Playlist;
@@ -33,7 +32,7 @@ import java.util.ArrayList;
 public class SongPlaylistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Serializable {
     public static final int ADD_LIST_TYPE = 9;
     public static final int LIST_TYPE = 10;
-    private final PlaylistDb playlistDb;
+    private final MusicDb musicDb;
     Context context;
     int layout;
     Fragment parentCall;
@@ -52,7 +51,7 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         this.songToAdd = songToAdd;
         mediaPlayer = GlobalMediaPlayer.getInstance();
         playlists = mediaPlayer.getSongPlayList();
-        playlistDb = new PlaylistDb(context, "playlistSong.db", null, 1);
+        musicDb = new MusicDb(context, "playlistSong.db", null, 1);
 
         songPlaylistInteractionListener = new OnSongPlaylistInteractionListener() {
             @Override
@@ -115,7 +114,7 @@ public class SongPlaylistAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 @Override
                 public void onClick(View v) {
                     if (parentCall instanceof PlaylistBottomSheet) {
-                        playlistDb.addSongToPlaylist(songToAdd, playlists.get(getLayoutPosition()), context);
+                        musicDb.addSongToPlaylist(songToAdd, playlists.get(getLayoutPosition()), context);
                         GlobalListener.PlaylistBottomSheet.listener.hideDialog();
                     } else if (parentCall instanceof PlaylistFragment) {
                         ParticularPlaylistBottomSheet playlistBottomSheet = ParticularPlaylistBottomSheet.getInstance(playlists.get(getLayoutPosition()));

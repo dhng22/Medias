@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.example.music.GlobalMediaPlayer;
 import com.example.music.R;
 import com.example.music.adapter.SongPlaylistAdapter;
-import com.example.music.database.PlaylistDb;
+import com.example.music.database.MusicDb;
 import com.example.music.models.Playlist;
 import com.example.music.models.Song;
 import com.example.music.utils.GlobalListener;
@@ -37,7 +37,7 @@ public class EdittextBottomFragment extends BottomSheetDialogFragment {
     TextView txtHeaderEdtFrag;
     private Song song;
     private int action;
-    PlaylistDb playlistDb;
+    MusicDb musicDb;
     SongPlaylistAdapter songListAdapter;
     Playlist playlist;
 
@@ -68,7 +68,7 @@ public class EdittextBottomFragment extends BottomSheetDialogFragment {
             this.action = bundle.getInt("action");
             this.songListAdapter = (SongPlaylistAdapter) bundle.getSerializable("songListAdapter");
         }
-        playlistDb = new PlaylistDb(requireContext(), "playlistSong.db", null, 1);
+        musicDb = new MusicDb(requireContext(), "playlistSong.db", null, 1);
     }
 
     @NonNull
@@ -91,7 +91,7 @@ public class EdittextBottomFragment extends BottomSheetDialogFragment {
                     File fileToRename = new File(song.path);
 
                     String toPath = song.path.replace(song.songName, edtRename.getText().toString().trim());
-                    playlistDb.updateSongPath(song, toPath);
+                    musicDb.updateSongPath(song, toPath);
 
                     File renameToTemp = new File( song.path.replace(song.songName, "yziscdqweqwzxcs"));
                     fileToRename.renameTo(renameToTemp);
@@ -122,7 +122,7 @@ public class EdittextBottomFragment extends BottomSheetDialogFragment {
                         if (renameTo.isEmpty()) {
                             Toast.makeText(requireContext(), "Playlist's name must not be empty", Toast.LENGTH_SHORT).show();
                         } else if (!mediaPlayer.isThisTableExist(renameTo)) {
-                            playlistDb.renamePlaylist(playlist, renameTo, mediaPlayer.getListIndexFromVisualPlaylist(playlist));
+                            musicDb.renamePlaylist(playlist, renameTo, mediaPlayer.getListIndexFromVisualPlaylist(playlist));
                             dismiss();
                         } else {
                             edtRename.setText("");
@@ -135,7 +135,7 @@ public class EdittextBottomFragment extends BottomSheetDialogFragment {
                 if (playlistName.isEmpty()) {
                     Toast.makeText(requireContext(), "Playlist's name must not be empty", Toast.LENGTH_SHORT).show();
                 } else if (!mediaPlayer.isThisTableExist(playlistName)) {
-                    playlistDb.createPlayList(playlistName, songListAdapter);
+                    musicDb.createPlayList(playlistName, songListAdapter);
                     dismiss();
                 } else {
                     edtRename.setText("");

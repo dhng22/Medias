@@ -9,6 +9,7 @@ import com.example.music.listener.OnMusicFragmentInteractionListener;
 import com.example.music.listener.OnPlaySongServiceInteractionListener;
 import com.example.music.listener.OnPlaylistBottomSheetInteraction;
 import com.example.music.listener.OnSongPlaylistInteractionListener;
+import com.example.music.listener.OnVideoAdapterInteractionListener;
 
 public class GlobalListener {
     public static class MainActivity {
@@ -45,5 +46,9 @@ public class GlobalListener {
     }
     public static class CurrentPlayingListBottomSheet {
         public static OnCurrentPlayingListInteractionListener listener;
+    }
+
+    public static class VideoAdapter {
+        public static OnVideoAdapterInteractionListener listener;
     }
 }

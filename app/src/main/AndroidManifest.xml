@@ -56,6 +56,10 @@
         <service
             android:name="com.example.music.service.RetrieveMusicService"
             android:enabled="true" />
+        <service android:enabled="true" android:name="com.example.music.service.RetrieveVideoService" />
+        <service
+            android:name=".service.RetrieveVideoPathService"
+            android:enabled="true" />
     </application>
 
 </manifest>

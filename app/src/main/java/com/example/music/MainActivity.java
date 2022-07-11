@@ -17,28 +17,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.example.music.adapter.ViewPagerAdapter;
-import com.example.music.database.PlaylistDb;
+import com.example.music.database.MusicDb;
 import com.example.music.fragment.FavSongFragment;
 import com.example.music.fragment.LocalSongFragment;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.models.Song;
-import com.example.music.service.RetrieveMusicService;
 import com.example.music.utils.GlobalListener;
 import com.example.music.utils.SongUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -54,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar songProgress;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    BroadcastReceiver stopActivityReceiver, retrieveVideoReceiver;
+    BroadcastReceiver stopActivityReceiver;
     LocalBroadcastManager broadcastManager;
     GlobalMediaPlayer mediaPlayer;
     OnMainActivityInteractionListener listener;
-    PlaylistDb favSongDb, recentSongDb;
+    MusicDb favSongDb, recentSongDb;
 
 
     @Override
@@ -70,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         if (sharedPreferences.getInt("repeatMode", GlobalMediaPlayer.MODE_REPEAT_PLAYLIST) == GlobalMediaPlayer.MODE_SHUFFLE) {
             new Handler().postDelayed(() -> mediaPlayer.shuffleModeOn(), 300) ;
         }
+
     }
 
     @Override
@@ -116,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDb() {
-        favSongDb = new PlaylistDb(this, "favSong.db", null, 1);
+        favSongDb = new MusicDb(this, "favSong.db", null, 1);
         favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
 
-        recentSongDb = new PlaylistDb(this, "recentSong.db", null, 1);
+        recentSongDb = new MusicDb(this, "recentSong.db", null, 1);
         recentSongDb.queryData("CREATE TABLE IF NOT EXISTS recentSong(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
     }
 
@@ -141,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSongList() {
-        mediaPlayer.init((ArrayList<String>) getIntent().getSerializableExtra("musics"), this);
+//        mediaPlayer.initSong((ArrayList<Song>) getIntent().getSerializableExtra("musics"), this);
     }
 
     private void initListener() {
@@ -309,14 +306,6 @@ public class MainActivity extends AppCompatActivity {
                 finishAndRemoveTask();
             }
         };
-        retrieveVideoReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                ArrayList<String> videosPath = (ArrayList<String>) intent.getSerializableExtra("musics");
-                mediaPlayer.initVideoList(videosPath);
-            }
-        };
-        broadcastManager.registerReceiver(retrieveVideoReceiver,new IntentFilter(RetrieveMusicService.ACTION_RETRIEVE_VIDEO));
         broadcastManager.registerReceiver(stopActivityReceiver, new IntentFilter(ACTION_STOP_ACTIVITY));
     }
 

@@ -13,21 +13,27 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.example.music.bottomSheet.CurrentPlayingListBottomSheet;
-import com.example.music.database.PlaylistDb;
+import com.example.music.database.MusicDb;
+import com.example.music.database.VideoDb;
 import com.example.music.fragment.RecentSongFragment;
 import com.example.music.models.Playlist;
 import com.example.music.models.Song;
+import com.example.music.models.Video;
 import com.example.music.service.PlaySongService;
 import com.example.music.utils.GlobalListener;
 import com.example.music.utils.SongUtils;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class GlobalMediaPlayer {
     public static final int NULL_STATE = -1;
@@ -40,9 +46,11 @@ public class GlobalMediaPlayer {
 
     private static final GlobalMediaPlayer globalMediaPlayer = new GlobalMediaPlayer();
     private int currentSongPlayingPosition = -1;
-    private static ArrayList<Song> playingSongList, visualSongList, baseSongList, favSongList, recentList,baseVideoList;
+    private  ArrayList<Song> playingSongList, visualSongList, baseSongList, favSongList, recentList;
+    private ArrayList<Video> baseVideoList = new ArrayList<>();
     private static ArrayList<Playlist> songPlayList;
     private static ArrayList<String> tableNames;
+    private static List<String> baseVideoListPath;
 
     private MediaPlayer mediaPlayer;
     private Song currentSong;
@@ -51,26 +59,22 @@ public class GlobalMediaPlayer {
     private Runnable updateSeekBarRunnable;
     ObjectAnimator animIncreaseSeekBar, animResetSeekBar;
     Handler updateSeekBarHandler, helperHandler;
-    PlaylistDb recentSongDb;
+    MusicDb recentSongDb;
+
     private GlobalMediaPlayer() {
         initVar();
         initListener();
     }
 
-    public void init(ArrayList<String> songUri, Context context) {
-
+    public void initSong(ArrayList<Song> song, Context context) {
         sharedPreferences = context.getSharedPreferences("appdata", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
-        visualSongList = new ArrayList<>();
 
-        for (String music : songUri) {
-            visualSongList.add(new Song(music, Song.NORMAL_STATE, context));
-        }
+        visualSongList = new ArrayList<>(song);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             visualSongList.sort(Comparator.naturalOrder());
         }
-
         for (int i = 0; i < visualSongList.size(); i++) {
             visualSongList.get(i).id = i;
         }
@@ -106,7 +110,7 @@ public class GlobalMediaPlayer {
 
     public void initFavSong(Context context) {
         favSongList = new ArrayList<>();
-        PlaylistDb favSongDb = new PlaylistDb(context, "favSong.db", null, 1);
+        MusicDb favSongDb = new MusicDb(context, "favSong.db", null, 1);
         favSongDb.queryData("CREATE TABLE IF NOT EXISTS favList(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
 
         Cursor data = favSongDb.getData(TABLE_NAME);
@@ -118,14 +122,14 @@ public class GlobalMediaPlayer {
                 favSongList.add(song);
             } else {
                 song = new Song(songPath);
-                favSongDb.removeFavSongFromTable(song, TABLE_NAME,context);
+                favSongDb.removeFavSongFromTable(song, TABLE_NAME, context);
             }
         }
     }
 
     public void initRecentList(Context context) {
         recentList = new ArrayList<>();
-        recentSongDb = new PlaylistDb(context, "recentSong.db", null, 1);
+        recentSongDb = new MusicDb(context, "recentSong.db", null, 1);
         recentSongDb.queryData("CREATE TABLE IF NOT EXISTS recentSong(id INTEGER PRIMARY KEY AUTOINCREMENT,name VARCHAR(400))");
 
         Cursor recentTable = recentSongDb.getData("recentSong");
@@ -136,14 +140,15 @@ public class GlobalMediaPlayer {
                 recentList.add(song);
             } else {
                 song = new Song(songPath);
-                recentSongDb.removeSongFromRecent(song,GlobalListener.SongListAdapter.listener.getParentFragment());
+                recentSongDb.removeSongFromRecent(song, GlobalListener.SongListAdapter.listener.getParentFragment());
             }
         }
         Collections.reverse(recentList);
     }
+
     public void initPlayList(Context context) {
         songPlayList = new ArrayList<>();
-        PlaylistDb playlistSongDb = new PlaylistDb(context, "playlistSong.db", null, 1);
+        MusicDb playlistSongDb = new MusicDb(context, "playlistSong.db", null, 1);
         tableNames = playlistSongDb.getTablesName();
         for (String tabName :
                 tableNames) {
@@ -161,6 +166,7 @@ public class GlobalMediaPlayer {
             songPlayList.add(new Playlist(tabName, songsInList));
         }
     }
+
     public void initOldSong(Context context) {
         if (sharedPreferences == null) {
             sharedPreferences = context.getSharedPreferences("appdata", Context.MODE_PRIVATE);
@@ -203,14 +209,42 @@ public class GlobalMediaPlayer {
     }
 
 
-    public void initVideoList(ArrayList<String> videosPath) {
-
+    public void initVideoList(ArrayList<Video> videoList) {
+        this.baseVideoList = videoList;
     }
+
+    public void recheckVideoList(ArrayList<String> videoPathRecheck, Context context) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        VideoDb videoDb = new VideoDb(context, "videos.db", null, 1);
+            for (String path : videoPathRecheck) {
+                if (baseVideoListPath.contains(path)) {
+                    continue;
+                }
+                Video video;
+                try {
+                    video = new Video(path);
+                } catch (FileNotFoundException ignored) {
+                    continue;
+                }
+                baseVideoList.add(video);
+                if (GlobalListener.VideoAdapter.listener != null) {
+                    handler.post(() -> GlobalListener.VideoAdapter.listener.notifyVideoAdded());
+                }
+                videoDb.addVideoToTable(path, video.getThumbnail(), video.getFullImage(),video.getFormattedDuration());
+            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            baseVideoList.sort(Comparator.naturalOrder());
+            if (GlobalListener.VideoAdapter.listener != null) {
+                handler.post(() -> GlobalListener.VideoAdapter.listener.notifySort());
+            }
+        }
+    }
+
     public void playSong(Song songToPlay, Context context) {
         if (recentSongDb == null) {
-            recentSongDb = new PlaylistDb(context, "recentSong.db", null, 1);
+            recentSongDb = new MusicDb(context, "recentSong.db", null, 1);
         }
-        recentSongDb.addSongToRecent(songToPlay,GlobalListener.SongListAdapter.listener.getParentFragment());
+        recentSongDb.addSongToRecent(songToPlay, GlobalListener.SongListAdapter.listener.getParentFragment());
         reset();
         resetNavigationSeekBar();
         if (currentSong != null) {
@@ -361,6 +395,7 @@ public class GlobalMediaPlayer {
     public void renewPlayingSongList() {
         playingSongList = new ArrayList<>(visualSongList);
     }
+
     public void resetPlayingSongList() {
         playingSongList = new ArrayList<>(baseSongList);
     }
@@ -442,6 +477,7 @@ public class GlobalMediaPlayer {
         }
         return false;
     }
+
     public int getPlayerState() {
         if (mediaPlayer == null) {
             return NULL_STATE;
@@ -462,6 +498,7 @@ public class GlobalMediaPlayer {
         }
         return -1;
     }
+
     public int getSongIndexFromVisualList(Song song) {
         if (song != null) {
             for (int i = 0; i < visualSongList.size(); i++) {
@@ -482,6 +519,7 @@ public class GlobalMediaPlayer {
         }
         return -1;
     }
+
     public int getCurrentSongIndex() {
         if (currentSong != null) {
             for (int i = 0; i < playingSongList.size(); i++) {
@@ -526,12 +564,15 @@ public class GlobalMediaPlayer {
     public Song getSongAt(int index) {
         return visualSongList.get(index);
     }
+
     public Song getCurrentSong() {
         return currentSong;
     }
+
     public ArrayList<Playlist> getSongPlayList() {
         return songPlayList;
     }
+
     public Playlist getPlaylistByName(String playListName) {
         for (Playlist p :
                 songPlayList) {
@@ -541,6 +582,7 @@ public class GlobalMediaPlayer {
         }
         return null;
     }
+
     public ArrayList<Song> getPlayingSongList() {
         return playingSongList;
     }
@@ -551,9 +593,11 @@ public class GlobalMediaPlayer {
         }
         return recentList;
     }
+
     public ArrayList<Song> getFavSongList() {
         return favSongList;
     }
+
     public ArrayList<Song> getVisualSongList() {
         return visualSongList;
     }
@@ -561,7 +605,8 @@ public class GlobalMediaPlayer {
     public ArrayList<Song> getBaseSongList() {
         return baseSongList;
     }
-    public static ArrayList<Song> getBaseVideoList() {
+
+    public ArrayList<Video> getBaseVideoList() {
         return baseVideoList;
     }
 
@@ -585,9 +630,9 @@ public class GlobalMediaPlayer {
         this.currentSong = currentSong;
     }
 
-    public void setPlayingSongList(@Nullable ArrayList<Song> currentSongList,boolean wantToShuffle) {
+    public void setPlayingSongList(@Nullable ArrayList<Song> currentSongList, boolean wantToShuffle) {
         if (currentSongList != null) {
-            GlobalMediaPlayer.playingSongList = new ArrayList<>(currentSongList);
+            this.playingSongList = new ArrayList<>(currentSongList);
             if (sharedPreferences.getInt("repeatMode", MODE_REPEAT_PLAYLIST) == MODE_SHUFFLE) {
                 if (wantToShuffle) {
                     shuffleModeOn();
@@ -597,11 +642,10 @@ public class GlobalMediaPlayer {
     }
 
     public void setVisualSongList(ArrayList<Song> baseSongList) {
-        GlobalMediaPlayer.visualSongList = baseSongList;
+        this.visualSongList = baseSongList;
     }
 
-    public static void setBaseVideoList(ArrayList<Song> baseVideoList) {
-        GlobalMediaPlayer.baseVideoList = baseVideoList;
+    public void setBaseVideoListPath(ArrayList<String> baseVideoListPath) {
+        GlobalMediaPlayer.baseVideoListPath = baseVideoListPath;
     }
-
 }

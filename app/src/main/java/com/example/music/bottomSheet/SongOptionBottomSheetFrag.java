@@ -2,21 +2,17 @@ package com.example.music.bottomSheet;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import com.example.music.GlobalMediaPlayer;
 import com.example.music.R;
-import com.example.music.adapter.SongListAdapter;
-import com.example.music.database.PlaylistDb;
+import com.example.music.database.MusicDb;
 import com.example.music.models.Playlist;
 import com.example.music.models.Song;
 import com.example.music.utils.GlobalListener;
@@ -31,7 +27,7 @@ public class SongOptionBottomSheetFrag extends BottomSheetDialogFragment {
     TextView btnPlayPause, btnAddToList, btnDelete, btnRename,txtSongName, btnFav;
     GlobalMediaPlayer mediaPlayer;
     public static Fragment fragment;
-    PlaylistDb playlistDb;
+    MusicDb musicDb;
 
     private SongOptionBottomSheetFrag() {
     }
@@ -57,7 +53,7 @@ public class SongOptionBottomSheetFrag extends BottomSheetDialogFragment {
             this.pos = bundle.getInt("songPos");
             this.playlist = (Playlist) bundle.getSerializable("playlist");
         }
-        playlistDb = new PlaylistDb(requireContext(), "playlistSong.db", null, 1);
+        musicDb = new MusicDb(requireContext(), "playlistSong.db", null, 1);
     }
 
     @NonNull
@@ -76,7 +72,7 @@ public class SongOptionBottomSheetFrag extends BottomSheetDialogFragment {
     private void initListener() {
         btnAddToList.setOnClickListener(v -> {
             if (fragment instanceof ParticularPlaylistBottomSheet) {
-                playlistDb.removeSongFromPlaylist(song,playlist,GlobalListener.SongListAdapter.listener.getAdapter(),mediaPlayer.getSongIndexFromVisualList(song), requireContext());
+                musicDb.removeSongFromPlaylist(song,playlist,GlobalListener.SongListAdapter.listener.getAdapter(),mediaPlayer.getSongIndexFromVisualList(song), requireContext());
             } else {
                 PlaylistBottomSheet playlistBottomSheet = PlaylistBottomSheet.getInstance(song);
                 GlobalListener.MainActivity.listener.showSongBottomSheetOption(playlistBottomSheet,getParentFragmentManager());
