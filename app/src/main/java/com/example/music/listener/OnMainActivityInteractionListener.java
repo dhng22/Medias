@@ -31,10 +31,6 @@ public interface OnMainActivityInteractionListener {
 
     void showSongBottomSheetOption(BottomSheetDialogFragment optionBottomSheetFrag, @Nullable FragmentManager fragmentManager);
 
-    void alternateForMusicFragment(Fragment fragment);
-
-    void resetToMusicFragment();
-
     void toggleRepeatMode();
 
     void shuffleModeSongOn();
@@ -42,4 +38,8 @@ public interface OnMainActivityInteractionListener {
     void onFavButtonClicked(Song song);
 
     void doBackPress();
+
+    void hideNavigationBar();
+
+    void showNavigationBar();
 }

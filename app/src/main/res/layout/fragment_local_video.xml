@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragment.LocalVideoFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:elevation="3dp"
+        android:background="@android:color/transparent"
+        android:stateListAnimator="@null"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
+            app:layout_scrollFlags="scroll"
+            app:layout_scrollEffect="none"
+            android:paddingBottom="@dimen/song_row_padding"
+            android:background="@color/black"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="@dimen/img_song_size"
+                android:layout_height="@dimen/img_song_size"
+                android:layout_marginStart="@dimen/size_secondary_btn_current_song"
+                android:layout_marginTop="@dimen/size_secondary_btn_current_song"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_video"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/rail_bold"
+                android:text=" |  Keep track\n   of you past"
+                android:textColor="@color/white"
+                android:textSize="@dimen/txt_intro_size"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                app:layout_constraintTop_toTopOf="parent"
+                android:id="@+id/cardView4"
+                android:layout_width="match_parent"
+                app:layout_scrollFlags="noScroll|enterAlways"
+                android:layout_height="wrap_content">
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/darker_grey"
+                    app:cardCornerRadius="@dimen/utils_corner"
+                    >
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/black">
+
+                        <TextView
+                            android:id="@+id/textView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/elevation_normal_shadow"
+                            android:layout_marginTop="@dimen/utils_corner"
+                            android:layout_marginBottom="@dimen/elevation_low_shadow"
+                            android:fontFamily="@font/rail_semi_bold"
+                            android:text="• Local video "
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/txt_title_size"
+                            app:flow_verticalBias="1"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+            <ImageView
+                android:layout_marginTop="-6dp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/size_secondary_btn_current_song"
+                android:elevation="2dp"
+                android:src="@drawable/corner_card"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/black" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:clipToPadding="false"
+        android:id="@+id/recyclerVideo"
+        android:background="@color/black"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:layout_marginTop="@dimen/recycler_neg_margin"
+        android:paddingTop="@dimen/recycler_pos_margin"
+        android:paddingBottom="@dimen/recycler_pos_margin"
+        android:elevation="-1dp"
+        app:spanCount="4"
+        tools:listitem="@layout/item_video"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

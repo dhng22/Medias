@@ -648,4 +648,13 @@ public class GlobalMediaPlayer {
     public void setBaseVideoListPath(ArrayList<String> baseVideoListPath) {
         GlobalMediaPlayer.baseVideoListPath = baseVideoListPath;
     }
+
+    public int getVideoIndexByPath(String path) {
+        for (int i = 0; i < baseVideoList.size(); i++) {
+            if (baseVideoList.get(i).path.equals(path)) {
+                return i;
+            }
+        }
+        return -1;
+    }
 }

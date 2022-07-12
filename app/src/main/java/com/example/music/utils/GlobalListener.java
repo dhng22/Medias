@@ -6,10 +6,12 @@ import com.example.music.listener.OnFavSongFragmentInteractionListener;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.listener.OnLocalSongFragmentInteractionListener;
 import com.example.music.listener.OnMusicFragmentInteractionListener;
+import com.example.music.listener.OnParticularVideoInteractionListener;
 import com.example.music.listener.OnPlaySongServiceInteractionListener;
 import com.example.music.listener.OnPlaylistBottomSheetInteraction;
 import com.example.music.listener.OnSongPlaylistInteractionListener;
 import com.example.music.listener.OnVideoAdapterInteractionListener;
+import com.example.music.listener.OnVideoFragmentInteractionListener;
 
 public class GlobalListener {
     public static class MainActivity {
@@ -50,5 +52,13 @@ public class GlobalListener {
 
     public static class VideoAdapter {
         public static OnVideoAdapterInteractionListener listener;
+    }
+
+    public static class VideoFragment {
+        public static OnVideoFragmentInteractionListener listener;
+    }
+
+    public static class FragmentParticularVideo {
+        public static OnParticularVideoInteractionListener listener;
     }
 }

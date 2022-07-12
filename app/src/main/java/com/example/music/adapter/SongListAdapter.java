@@ -155,6 +155,9 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                         mediaPlayer.setPlayingSongList(mediaPlayer.getFavSongList(),true);
                     }
 
+                    if (parentFragment instanceof CurrentPlayingListBottomSheet) {
+                        GlobalListener.CurrentSongActivity.listener.renewCurrentSong();
+                    }
                 } else {
                     if (mediaPlayer.isPlaying()) {
                         mediaPlayer.pauseSong(context);

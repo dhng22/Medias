@@ -2,6 +2,7 @@ package com.example.music.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.music.GlobalMediaPlayer;
 import com.example.music.R;
+import com.example.music.fragment.VideoPageFragment;
 import com.example.music.listener.OnVideoAdapterInteractionListener;
 import com.example.music.models.Video;
 import com.example.music.utils.GlobalListener;
@@ -30,8 +33,9 @@ public class VideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     Fragment parentCall;
     GlobalMediaPlayer mediaPlayer;
     ArrayList<Video> videoList;
-
-    public VideoAdapter(Context context, int layout,ArrayList<Video> videoList, RecyclerView videoRecycler, Fragment parentCall) {
+    VideoPageFragment pageFragment;
+    public VideoAdapter(Context context, int layout, ArrayList<Video> videoList, RecyclerView videoRecycler, Fragment parentCall) {
+        pageFragment = new VideoPageFragment();
         this.context = context;
         this.layout = layout;
         this.videoRecycler = videoRecycler;
@@ -51,6 +55,10 @@ public class VideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             public void notifySort() {
                 notifyDataSetChanged();
             }
+            @Override
+            public void startVideoPager(int pos) {
+                startVideoPage(pos);
+            }
         };
         GlobalListener.VideoAdapter.listener = videoAdapterInteractionListener;
     }
@@ -63,7 +71,18 @@ public class VideoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             super(itemView);
             imgThumbnail = itemView.findViewById(R.id.imgThumbnail);
             txtVidDur = itemView.findViewById(R.id.txtVidDur);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startVideoPage(getLayoutPosition());
+                }
+            });
         }
+    }
+
+    private void startVideoPage(int pos) {
+        pageFragment.setPage(pos);
+        GlobalListener.VideoFragment.listener.addFragment(pageFragment);
     }
 
     class EmptyHolder extends RecyclerView.ViewHolder {

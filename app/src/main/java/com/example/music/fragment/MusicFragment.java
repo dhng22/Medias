@@ -37,7 +37,7 @@ public class MusicFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        fragmentManager = getParentFragmentManager().beginTransaction();
+        fragmentManager = getChildFragmentManager().beginTransaction();
         fragmentManager.setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out);
         fragmentManager.replace(R.id.mainFragment, localSongFragment).commit();
     }
@@ -57,14 +57,14 @@ public class MusicFragment extends Fragment {
         musicFragmentInteractionListener = new OnMusicFragmentInteractionListener() {
             @Override
             public void toFavSongFrag() {
-                fragmentManager = getParentFragmentManager().beginTransaction();
+                fragmentManager = getChildFragmentManager().beginTransaction();
                 fragmentManager.setCustomAnimations(R.anim.anim_slide_right, R.anim.anim_fade_out, R.anim.anim_fade_in, R.anim.anim_slide_left);
                 fragmentManager.replace(R.id.mainFragment, favSongFragment).addToBackStack(null).commit();
             }
 
             @Override
             public void toPlaylistFrag() {
-                fragmentManager = getParentFragmentManager().beginTransaction();
+                fragmentManager = getChildFragmentManager().beginTransaction();
                 fragmentManager.setCustomAnimations(R.anim.anim_slide_right, R.anim.anim_fade_out, R.anim.anim_fade_in, R.anim.anim_slide_left);
 
                 fragmentManager.replace(R.id.mainFragment, playlistFragment).addToBackStack(null).commit();
@@ -72,7 +72,7 @@ public class MusicFragment extends Fragment {
 
             @Override
             public void toLocalSongFrag() {
-                fragmentManager = getParentFragmentManager().beginTransaction();
+                fragmentManager = getChildFragmentManager().beginTransaction();
                 fragmentManager.setCustomAnimations(R.anim.anim_slide_right, R.anim.anim_fade_out, R.anim.anim_fade_in, R.anim.anim_slide_left);
 
                 fragmentManager.replace(R.id.mainFragment, localSongFragment).commit();
@@ -80,7 +80,7 @@ public class MusicFragment extends Fragment {
 
             @Override
             public void toRecentSongFrag() {
-                fragmentManager = getParentFragmentManager().beginTransaction();
+                fragmentManager = getChildFragmentManager().beginTransaction();
                 fragmentManager.setCustomAnimations(R.anim.anim_slide_right, R.anim.anim_fade_out, R.anim.anim_fade_in, R.anim.anim_slide_left);
                 fragmentManager.replace(R.id.mainFragment, recentSongFrag).addToBackStack(null).commit();
 

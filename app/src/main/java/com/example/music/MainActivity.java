@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         broadcastManager = LocalBroadcastManager.getInstance(this);
         initDb();
         mapping();
-        initSongList();
 
         initFavList();
         initPlayList();
@@ -137,9 +136,6 @@ public class MainActivity extends AppCompatActivity {
         btnNextSong = findViewById(R.id.btnNextSong);
     }
 
-    private void initSongList() {
-//        mediaPlayer.initSong((ArrayList<Song>) getIntent().getSerializableExtra("musics"), this);
-    }
 
     private void initListener() {
         listener = new OnMainActivityInteractionListener() {
@@ -202,19 +198,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void alternateForMusicFragment(Fragment fragment) {
-                viewPagerAdapter = new ViewPagerAdapter(MainActivity.this);
-                viewPagerAdapter.setMusicTabFrag(fragment);
-                viewPagerTabs.setAdapter(viewPagerAdapter);
-                viewPagerTabs.setCurrentItem(1, false);
-            }
-
-            @Override
-            public void resetToMusicFragment() {
-
-            }
-
-            @Override
             public void toggleRepeatMode() {
                 toggleRepMode();
             }
@@ -232,6 +215,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void doBackPress() {
                 onBackPressed();
+            }
+
+            @Override
+            public void hideNavigationBar() {
+                bottomNavWrapper.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void showNavigationBar() {
+                bottomNavWrapper.setVisibility(View.VISIBLE);
             }
         };
 
@@ -416,6 +409,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (viewPagerTabs.getCurrentItem() == 0) {
+            if (GlobalListener.VideoFragment.listener.getFragmentManager().getBackStackEntryCount() > 0) {
+                GlobalListener.VideoFragment.listener.getFragmentManager().popBackStack();
+            }
+        } else {
+            super.onBackPressed();
+        }
     }
 }

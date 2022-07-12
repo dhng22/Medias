@@ -5,8 +5,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.music.fragment.LocalSongFragment;
+import com.example.music.fragment.ImageFragment;
 import com.example.music.fragment.MusicFragment;
+import com.example.music.fragment.LocalVideoFragment;
 import com.example.music.fragment.VideoFragment;
 
 public class ViewPagerAdapter extends FragmentStateAdapter {
@@ -15,7 +16,9 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     }
 
     Fragment musicTabFrag = new MusicFragment();
-    VideoFragment videoFragTab = new VideoFragment();
+    LocalVideoFragment localVideoFragTab = new LocalVideoFragment();
+    VideoFragment videoFragTab = new VideoFragment(localVideoFragTab);
+
 
 
     @NonNull
@@ -27,7 +30,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return musicTabFrag;
             case 2:
-                return new VideoFragment();
+                return new ImageFragment();
         }
     }
 
@@ -35,8 +38,8 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
         this.musicTabFrag = musicTabFrag;
     }
 
-    public VideoFragment getVideoFragTab() {
-        return videoFragTab;
+    public LocalVideoFragment getVideoFragTab() {
+        return localVideoFragTab;
     }
     @Override
     public int getItemCount() {

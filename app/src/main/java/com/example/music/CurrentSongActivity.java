@@ -186,6 +186,7 @@ public class CurrentSongActivity extends AppCompatActivity {
                 txtSongTitle.setText(song.songName);
                 seekBarSong.setMax((int) song.duration);
                 seekBarSong.setProgress(mediaPlayer.getCurrentSongPlayingPosition());
+                handler.post(runnable);
                 validateDuration(song);
             }
 
