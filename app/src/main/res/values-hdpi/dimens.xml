@@ -1,15 +1,15 @@
 <resources>
-	<dimen name="song_row_padding">5.2dp</dimen>
-	<dimen name="img_song_size">39.4dp</dimen>
-	<dimen name="img_song_corner">5.5dp</dimen>
-	<dimen name="img_album_size">10.9dp</dimen>
-	<dimen name="img_album_margin_start">3.1dp</dimen>
-	<dimen name="txt_title_margin">2.2dp</dimen>
+	<dimen name="song_row_padding">4.5dp</dimen>
+	<dimen name="img_song_size">33.8dp</dimen>
+	<dimen name="img_song_corner">4.7dp</dimen>
+	<dimen name="img_album_size">9.4dp</dimen>
+	<dimen name="img_album_margin_start">2.6dp</dimen>
+	<dimen name="txt_title_margin">1.9dp</dimen>
 	<dimen name="txt_title_size">7.5sp</dimen>
 	<dimen name="txt_song_desc_size">5.2sp</dimen>
 	<dimen name="txt_song_dur_size">6sp</dimen>
-	<dimen name="bottom_item_size">16.6dp</dimen>
-	<dimen name="nav_corner">11.4dp</dimen>
+	<dimen name="bottom_item_size">14.2dp</dimen>
+	<dimen name="nav_corner">12.8dp</dimen>
 	<dimen name="img_empty_size">60dp</dimen>
 	<dimen name="utils_corner">11dp</dimen>
 	<dimen name="elevation_normal_shadow">6dp</dimen>
@@ -27,4 +27,16 @@
 	<dimen name="margin_song_image">3dp</dimen>
 	<dimen name="elevation_song_image">1dp</dimen>
 	<dimen name="margin_txtSongTitle">5dp</dimen>
+	<dimen name="size_current_song_txt">9sp</dimen>
+	<dimen name="txt_empty_list_size">11sp</dimen>
+	<dimen name="size_secondary_btn_current_song">16dp</dimen>
+	<dimen name="size_secondary_btn_current_song_smaller">14.5dp</dimen>
+	<dimen name="size_current_song_menu">12dp</dimen>
+	<dimen name="size_pause_current_song">32dp</dimen>
+	<dimen name="bottom_layout_button_height">25dp</dimen>
+	<dimen name="recycler_neg_margin">-40dp</dimen>
+	<dimen name="recycler_pos_margin">40dp</dimen>
+	<dimen name="txt_song_name_width">115dp</dimen>
+	<dimen name="bottom_sheet_haft_screen_height">200dp</dimen>
+	<dimen name="bottom_sheet_third_screen_height">107.5dp</dimen>
 </resources>

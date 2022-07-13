@@ -1,15 +1,15 @@
 <resources>
 	<dimen name="song_row_padding">6dp</dimen>
 	<dimen name="img_song_size">45dp</dimen>
-	<dimen name="img_song_corner">6.2dp</dimen>
+	<dimen name="img_song_corner">6.3dp</dimen>
 	<dimen name="img_album_size">12.5dp</dimen>
 	<dimen name="img_album_margin_start">3.5dp</dimen>
 	<dimen name="txt_title_margin">2.5dp</dimen>
 	<dimen name="txt_title_size">10sp</dimen>
-	<dimen name="txt_song_desc_size">7.8sp</dimen>
-	<dimen name="txt_song_dur_size">9sp</dimen>
+	<dimen name="txt_song_desc_size">6.9sp</dimen>
+	<dimen name="txt_song_dur_size">8sp</dimen>
 	<dimen name="bottom_item_size">19dp</dimen>
-	<dimen name="nav_corner">13dp</dimen>
+	<dimen name="nav_corner">17dp</dimen>
 	<dimen name="img_empty_size">80dp</dimen>
 	<dimen name="utils_corner">14.7dp</dimen>
 	<dimen name="elevation_normal_shadow">8dp</dimen>
@@ -18,13 +18,25 @@
 	<dimen name="margin_music_controller">5.3dp</dimen>
 	<dimen name="margin_start_txt_intro">26.7dp</dimen>
 	<dimen name="margin_top_txt_intro">16dp</dimen>
-	<dimen name="txt_intro_size">17.2sp</dimen>
+	<dimen name="txt_intro_size">15.3sp</dimen>
 	<dimen name="elevation_low_shadow">5.3dp</dimen>
 	<dimen name="padding_button_utils">6dp</dimen>
-	<dimen name="size_txt_music_utils">6.7sp</dimen>
+	<dimen name="size_txt_music_utils">6sp</dimen>
 	<dimen name="size_local_song">13.3dp</dimen>
 	<dimen name="margin_row_song_bottom">2.7dp</dimen>
 	<dimen name="margin_song_image">4dp</dimen>
 	<dimen name="elevation_song_image">1.3dp</dimen>
 	<dimen name="margin_txtSongTitle">6.7dp</dimen>
+	<dimen name="size_current_song_txt">12sp</dimen>
+	<dimen name="txt_empty_list_size">14.7sp</dimen>
+	<dimen name="size_secondary_btn_current_song">21.3dp</dimen>
+	<dimen name="size_secondary_btn_current_song_smaller">19.3dp</dimen>
+	<dimen name="size_current_song_menu">16dp</dimen>
+	<dimen name="size_pause_current_song">42.7dp</dimen>
+	<dimen name="bottom_layout_button_height">33.3dp</dimen>
+	<dimen name="recycler_neg_margin">-53.3dp</dimen>
+	<dimen name="recycler_pos_margin">53.3dp</dimen>
+	<dimen name="txt_song_name_width">153.3dp</dimen>
+	<dimen name="bottom_sheet_haft_screen_height">266.7dp</dimen>
+	<dimen name="bottom_sheet_third_screen_height">143.3dp</dimen>
 </resources>

@@ -26,6 +26,8 @@ import android.provider.Settings;
 import com.example.music.database.VideoDb;
 import com.example.music.models.Song;
 import com.example.music.models.Video;
+import com.example.music.service.RetrieveImagePathService;
+import com.example.music.service.RetrieveImageService;
 import com.example.music.service.RetrieveMusicService;
 import com.example.music.service.RetrieveVideoPathService;
 import com.example.music.service.RetrieveVideoService;
@@ -38,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
     ArrayList<Song> musics;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    Intent retrieveMusicService, retrieveVideoService, retrieveVideoFromDbService, retrieveVideoPathService;
+    Intent retrieveMusicService, retrieveVideoService, retrieveVideoFromDbService, retrieveVideoPathService, retrieveImagePathService, retrieveImageFromDbService, retrieveImageService;
     LocalBroadcastManager broadcastManager;
     BroadcastReceiver musicReceiver;
     GlobalMediaPlayer mediaPlayer;
@@ -75,24 +77,33 @@ public class SplashActivity extends AppCompatActivity {
                             permissionAsked = true;
                             editor.putBoolean("permissionAsked", true);
                             dialogInterface.cancel();
-                            startService(retrieveVideoPathService);
                             startService(retrieveMusicService);
+                            startService(retrieveVideoPathService);
                             startService(retrieveVideoFromDbService);
-                            startService(retrieveVideoService);
+
+                            startService(retrieveImagePathService);
+                            startService(retrieveImageFromDbService);
+
                         }).create();
                 permissionDialog.setCanceledOnTouchOutside(false);
                 permissionDialog.show();
             } else if (ContextCompat.checkSelfPermission(getApplicationContext(), Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION) == PackageManager.PERMISSION_GRANTED) {
-                startService(retrieveVideoPathService);
                 startService(retrieveMusicService);
+                startService(retrieveVideoPathService);
                 startService(retrieveVideoFromDbService);
-                startService(retrieveVideoService);
+
+                startService(retrieveImagePathService);
+                startService(retrieveImageFromDbService);
+
             }
         } else {
-            startService(retrieveVideoPathService);
             startService(retrieveMusicService);
+            startService(retrieveVideoPathService);
             startService(retrieveVideoFromDbService);
-            startService(retrieveVideoService);
+
+            startService(retrieveImagePathService);
+            startService(retrieveImageFromDbService);
+
         }
     }
 
@@ -100,10 +111,11 @@ public class SplashActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    startService(retrieveVideoPathService);
                     startService(retrieveMusicService);
+                    startService(retrieveVideoPathService);
                     startService(retrieveVideoFromDbService);
-                    startService(retrieveVideoService);
+                    startService(retrieveImagePathService);
+                    startService(retrieveImageFromDbService);
                 }
             });
     private void askForPermission() {
@@ -130,9 +142,21 @@ public class SplashActivity extends AppCompatActivity {
         retrieveVideoService = new Intent(this, RetrieveMusicService.class);
         retrieveVideoFromDbService = new Intent(this, RetrieveVideoService.class);
         retrieveVideoPathService = new Intent(this, RetrieveVideoPathService.class);
-        retrieveMusicService.putExtra("type", ".mp3");
-        retrieveVideoService.putExtra("type", ".mp4");
+        retrieveImagePathService = new Intent(this, RetrieveImagePathService.class);
+        retrieveImageService = new Intent(this, RetrieveImageService.class);
+        retrieveImageFromDbService = new Intent(this, RetrieveImageService.class);
 
+        ArrayList<String> typeMusic = new ArrayList<>();
+        typeMusic.add(".mp3");
+        ArrayList<String> typeVideo = new ArrayList<>();
+        typeMusic.add(".mp4");
+        ArrayList<String> typeImage = new ArrayList<>();
+        typeMusic.add(".jpg");
+        typeMusic.add(".png");
+        typeMusic.add("jpeg");
+        retrieveMusicService.putExtra("type", typeMusic);
+        retrieveVideoService.putExtra("type", typeVideo);
+        retrieveImageService.putExtra("type", typeImage);
         broadcastManager = LocalBroadcastManager.getInstance(this);
 
         musicReceiver = new BroadcastReceiver() {

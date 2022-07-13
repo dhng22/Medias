@@ -18,7 +18,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
     Fragment musicTabFrag = new MusicFragment();
     LocalVideoFragment localVideoFragTab = new LocalVideoFragment();
     VideoFragment videoFragTab = new VideoFragment(localVideoFragTab);
-
+    ImageFragment imageFragment = new ImageFragment();
 
 
     @NonNull
@@ -30,7 +30,7 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
             case 1:
                 return musicTabFrag;
             case 2:
-                return new ImageFragment();
+                return imageFragment;
         }
     }
 

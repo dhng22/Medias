@@ -30,10 +30,13 @@
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_delete.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_fav_song.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_image.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_image_page.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_local_image.xml" value="0.2692307692307692" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_local_song.xml" value="0.27008547008547007" />
-        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_local_video.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_local_video.xml" value="0.5" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_music2.xml" value="0.27008547008547007" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_particular_image.xml" value="0.2692307692307692" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_particular_video.xml" value="0.2551282051282051" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_particurlar_playlist_bottom_sheet.xml" value="0.33" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_play_video.xml" value="0.2551282051282051" />
@@ -45,6 +48,7 @@
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_video.xml" value="0.49375" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_video2.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/fragment_video_page.xml" value="0.2551282051282051" />
+        <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_image.xml" value="0.2692307692307692" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist.xml" value="0.25" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist_add.xml" value="0.27008547008547007" />
         <entry key="..\:/Documents/code/AndroidCode/Music/app/src/main/res/layout/item_playlist_add_dark.xml" value="0.2692307692307692" />

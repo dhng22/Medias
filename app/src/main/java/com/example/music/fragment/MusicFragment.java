@@ -85,6 +85,11 @@ public class MusicFragment extends Fragment {
                 fragmentManager.replace(R.id.mainFragment, recentSongFrag).addToBackStack(null).commit();
 
             }
+
+            @Override
+            public FragmentManager getFragmentManager() {
+                return getChildFragmentManager();
+            }
         };
         GlobalListener.MusicFragment.listener = musicFragmentInteractionListener;
     }

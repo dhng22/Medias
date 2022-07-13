@@ -3,6 +3,8 @@ import com.example.music.listener.OnAdapterInteractionListener;
 import com.example.music.listener.OnCurrentPlayingListInteractionListener;
 import com.example.music.listener.OnCurrentSongActivityInteractionListener;
 import com.example.music.listener.OnFavSongFragmentInteractionListener;
+import com.example.music.listener.OnImageAdapterInteractionListener;
+import com.example.music.listener.OnImageFragmentInteractionListener;
 import com.example.music.listener.OnMainActivityInteractionListener;
 import com.example.music.listener.OnLocalSongFragmentInteractionListener;
 import com.example.music.listener.OnMusicFragmentInteractionListener;
@@ -60,5 +62,14 @@ public class GlobalListener {
 
     public static class FragmentParticularVideo {
         public static OnParticularVideoInteractionListener listener;
+    }
+
+    public static class ImageAdapter {
+        public static OnImageAdapterInteractionListener listener;
+    }
+
+    public static class ImageFragment {
+        public static OnImageFragmentInteractionListener listener;
+
     }
 }

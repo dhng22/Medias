@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         viewPagerTabs.setAdapter(viewPagerAdapter);
         viewPagerTabs.setUserInputEnabled(false);
         viewPagerTabs.setCurrentItem(1, false);
+        viewPagerTabs.setOffscreenPageLimit(ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT);
 
         bottomNavigation.setSelectedItemId(R.id.btnMusicTab);
 
@@ -412,7 +413,19 @@ public class MainActivity extends AppCompatActivity {
         if (viewPagerTabs.getCurrentItem() == 0) {
             if (GlobalListener.VideoFragment.listener.getFragmentManager().getBackStackEntryCount() > 0) {
                 GlobalListener.VideoFragment.listener.getFragmentManager().popBackStack();
+            } else {
+                super.onBackPressed();
             }
+        } else if (viewPagerTabs.getCurrentItem() == 1) {
+            if (GlobalListener.MusicFragment.listener.getFragmentManager().getBackStackEntryCount() > 0) {
+                GlobalListener.MusicFragment.listener.getFragmentManager().popBackStack();
+            } else {
+                super.onBackPressed();
+            }
+        } else if (viewPagerTabs.getCurrentItem() == 2) {
+            if (GlobalListener.ImageFragment.listener.getFragmentManager().getBackStackEntryCount() > 0) {
+                GlobalListener.ImageFragment.listener.getFragmentManager().popBackStack();
+            } else super.onBackPressed();
         } else {
             super.onBackPressed();
         }

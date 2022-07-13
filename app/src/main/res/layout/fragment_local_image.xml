@@ -2,10 +2,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@color/darker_grey"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragment.LocalVideoFragment">
+    tools:context=".fragment.LocalImageFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:elevation="0dp"
@@ -29,7 +28,7 @@
                 android:layout_marginStart="@dimen/size_secondary_btn_current_song"
                 android:layout_marginTop="@dimen/size_secondary_btn_current_song"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_video"
+                android:src="@drawable/ic_photo_album"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -43,14 +42,12 @@
                 app:layout_constraintStart_toEndOf="@+id/imageView"
                 app:layout_constraintTop_toTopOf="@+id/imageView" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 app:layout_constraintTop_toTopOf="parent"
-                android:background="@android:color/transparent"
                 android:id="@+id/cardView4"
                 android:layout_width="match_parent"
                 app:layout_scrollFlags="noScroll|enterAlways"
@@ -68,14 +65,14 @@
                         android:background="@color/darker_grey">
 
                         <TextView
-                            android:layout_marginBottom="@dimen/img_album_size"
                             android:id="@+id/textView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/elevation_normal_shadow"
                             android:layout_marginTop="@dimen/utils_corner"
+                            android:layout_marginBottom="@dimen/img_album_size"
                             android:fontFamily="@font/rail_semi_bold"
-                            android:text="• Local video "
+                            android:text="• Local photos "
                             android:textColor="@color/white"
                             android:textSize="@dimen/txt_title_size"
                             app:flow_verticalBias="1"
@@ -93,14 +90,14 @@
                 android:elevation="2dp"
                 android:src="@drawable/corner_card"
                 app:layout_constraintTop_toTopOf="parent"
-                 />
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:clipToPadding="false"
-        android:id="@+id/recyclerVideo"
+        android:id="@+id/recyclerImage"
         android:background="@color/darker_grey"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         android:layout_marginTop="@dimen/recycler_neg_margin"
@@ -108,7 +105,7 @@
         android:paddingBottom="@dimen/recycler_pos_margin"
         android:elevation="-1dp"
         app:spanCount="4"
-        tools:listitem="@layout/item_video"
+        tools:listitem="@layout/item_image"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

@@ -19,9 +19,11 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.music.bottomSheet.CurrentPlayingListBottomSheet;
+import com.example.music.database.ImageDb;
 import com.example.music.database.MusicDb;
 import com.example.music.database.VideoDb;
 import com.example.music.fragment.RecentSongFragment;
+import com.example.music.models.Image;
 import com.example.music.models.Playlist;
 import com.example.music.models.Song;
 import com.example.music.models.Video;
@@ -60,6 +62,8 @@ public class GlobalMediaPlayer {
     ObjectAnimator animIncreaseSeekBar, animResetSeekBar;
     Handler updateSeekBarHandler, helperHandler;
     MusicDb recentSongDb;
+    private ArrayList<Image> baseImageList = new ArrayList<>();
+    private ArrayList<String> baseImagePathList = new ArrayList<>();
 
     private GlobalMediaPlayer() {
         initVar();
@@ -656,5 +660,47 @@ public class GlobalMediaPlayer {
             }
         }
         return -1;
+    }
+
+    public ArrayList<Image> getBaseImageList() {
+        return baseImageList;
+    }
+
+    public void initImageList(ArrayList<Image> images) {
+        this.baseImageList = images;
+    }
+
+    public void setBaseImageListPath(ArrayList<String> images) {
+        this.baseImagePathList = images;
+    }
+
+    public void recheckImageList(ArrayList<String> imagePathRecheck, Context context) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        ImageDb imageDb = new ImageDb(context, "images.db", null, 1);
+        synchronized (baseImageList) {
+            for (String path : imagePathRecheck) {
+                if (baseImagePathList.contains(path)) {
+                    continue;
+                }
+                Image image;
+                try {
+                    image = new Image(path);
+                } catch (FileNotFoundException ignored) {
+                    continue;
+                }
+                baseImageList.add(image);
+                imageDb.addImageToTable(path, image.getThumbnail(), image.getFullImage());
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                baseImageList.sort(Comparator.naturalOrder());
+                if (GlobalListener.ImageAdapter.listener != null) {
+                    handler.post(() -> GlobalListener.ImageAdapter.listener.notifySort());
+                }
+            }
+        }
+    }
+
+    public ArrayList<String> getBaseImagePathList() {
+        return baseImagePathList;
     }
 }

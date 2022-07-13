@@ -6,14 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.music.R;
-import com.example.music.adapter.VideoViewPagerAdapter;
+import com.example.music.adapter.ImageViewPagerAdapter;
 
 
-public class VideoPageFragment extends Fragment {
-    ViewPager2 videoPager;
-    VideoViewPagerAdapter adapter;
+
+public class ImagePageFragment extends Fragment {
+    ViewPager2 imagePager;
+    ImageViewPagerAdapter adapter;
     int pos;
-    public VideoPageFragment() {
+    public ImagePageFragment() {
         // Required empty public constructor
     }
 
@@ -26,16 +27,16 @@ public class VideoPageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_video_page, container, false);
-        adapter = new VideoViewPagerAdapter(this);
+        View view = inflater.inflate(R.layout.fragment_image_page, container, false);
+        adapter = new ImageViewPagerAdapter(this);
         init(view);
         return view;
     }
 
     private void init(View view) {
-        videoPager = view.findViewById(R.id.videoPager);
-        videoPager.setAdapter(adapter);
-        videoPager.setCurrentItem(pos,false);
+        imagePager = view.findViewById(R.id.imagePager);
+        imagePager.setAdapter(adapter);
+        imagePager.setCurrentItem(pos,false);
     }
 
     public void setPage(int pos) {
