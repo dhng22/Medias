@@ -40,7 +40,7 @@ public class SplashActivity extends AppCompatActivity {
     ArrayList<Song> musics;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    Intent retrieveMusicService, retrieveVideoService, retrieveVideoFromDbService, retrieveVideoPathService, retrieveImagePathService, retrieveImageFromDbService, retrieveImageService;
+    Intent retrieveMusicService, retrieveVideoFromDbService, retrieveVideoPathService, retrieveImagePathService, retrieveImageFromDbService;
     LocalBroadcastManager broadcastManager;
     BroadcastReceiver musicReceiver;
     GlobalMediaPlayer mediaPlayer;
@@ -139,24 +139,11 @@ public class SplashActivity extends AppCompatActivity {
         editor = sharedPreferences.edit();
 
         retrieveMusicService = new Intent(this, RetrieveMusicService.class);
-        retrieveVideoService = new Intent(this, RetrieveMusicService.class);
         retrieveVideoFromDbService = new Intent(this, RetrieveVideoService.class);
         retrieveVideoPathService = new Intent(this, RetrieveVideoPathService.class);
         retrieveImagePathService = new Intent(this, RetrieveImagePathService.class);
-        retrieveImageService = new Intent(this, RetrieveImageService.class);
         retrieveImageFromDbService = new Intent(this, RetrieveImageService.class);
 
-        ArrayList<String> typeMusic = new ArrayList<>();
-        typeMusic.add(".mp3");
-        ArrayList<String> typeVideo = new ArrayList<>();
-        typeMusic.add(".mp4");
-        ArrayList<String> typeImage = new ArrayList<>();
-        typeMusic.add(".jpg");
-        typeMusic.add(".png");
-        typeMusic.add("jpeg");
-        retrieveMusicService.putExtra("type", typeMusic);
-        retrieveVideoService.putExtra("type", typeVideo);
-        retrieveImageService.putExtra("type", typeImage);
         broadcastManager = LocalBroadcastManager.getInstance(this);
 
         musicReceiver = new BroadcastReceiver() {

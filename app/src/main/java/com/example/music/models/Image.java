@@ -32,7 +32,6 @@ public class Image implements Comparable<Image>, Serializable {
         this.thumbnail = thumbnail;
         this.fullImage = BitmapFactory.decodeFile(path);
         date = image.lastModified();
-        Log.e("TAG", "Image: created first");
     }
     public Image(String path) throws FileNotFoundException {
         this.path = path;
@@ -49,7 +48,6 @@ public class Image implements Comparable<Image>, Serializable {
         thumbnail = Bitmap.createScaledBitmap(thumb, imageWidth, imageHeight, false);
 
         date = image.lastModified();
-        Log.e("TAG", "Image: created second");
     }
 
     @Override

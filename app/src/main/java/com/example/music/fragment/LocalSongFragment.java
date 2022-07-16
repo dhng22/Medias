@@ -94,14 +94,12 @@ public class LocalSongFragment extends Fragment {
         mapping(view);
 
         initListener();
-        Log.e("TAG", "onCreateView: ");
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.e("TAG", "onResume: ");
         songListAdapter = new SongListAdapter(requireContext(), R.layout.row_song, songRecycler,this,null);
         songRecycler.setAdapter(songListAdapter);
     }

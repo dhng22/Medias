@@ -18,50 +18,31 @@ import java.util.Objects;
 
 public class RetrieveMusicService extends IntentService {
     public static final String ACTION_RETRIEVE_MUSIC = "action_retrieve_music";
-    public static final String ACTION_RETRIEVE_VIDEO = "action_retrieve_video";
-    public static final String ACTION_RETRIEVE_IMAGE = "action_retrieve_image";
-    ArrayList<String> musics,videos, images;
+    ArrayList<String> musics;
     Intent retrieveMusicReceiver;
     LocalBroadcastManager broadcastManager;
-    ArrayList<String> fileType;
     GlobalMediaPlayer mediaPlayer;
 
     public RetrieveMusicService() {
         super("RETRIEVE_SERVICE");
         musics = new ArrayList<>();
-        videos = new ArrayList<>();
-        images = new ArrayList<>();
         mediaPlayer = GlobalMediaPlayer.getInstance();
     }
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         assert intent != null;
-        fileType = new ArrayList<>((ArrayList<String>) intent.getSerializableExtra("type"));
-        if (fileType.contains(".mp3")) {
-            retrieveMusicReceiver = new Intent(ACTION_RETRIEVE_MUSIC);
-        } else if (fileType.contains(".mp4")) {
-            retrieveMusicReceiver = new Intent(ACTION_RETRIEVE_VIDEO);
-        } else if (fileType.contains(".jpg")) {
-            retrieveMusicReceiver = new Intent(ACTION_RETRIEVE_IMAGE);
-        }
+        retrieveMusicReceiver = new Intent(ACTION_RETRIEVE_MUSIC);
         broadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+
         retrieveMusicReference(Environment.getExternalStorageDirectory());
 
-        if (fileType.contains(".mp3")) {
-            ArrayList<Song> music = new ArrayList<>();
-            for (String path : musics) {
-                music.add(new Song(path, Song.NORMAL_STATE, getApplicationContext()));
-            }
-            retrieveMusicReceiver.putExtra("musics", music);
-            broadcastManager.sendBroadcast(retrieveMusicReceiver);
+        ArrayList<Song> music = new ArrayList<>();
+        for (String path : musics) {
+            music.add(new Song(path, Song.NORMAL_STATE, getApplicationContext()));
         }
-        if (fileType.contains(".mp4")) {
-            mediaPlayer.recheckVideoList(videos, getApplicationContext());
-        }
-        if (fileType.contains(".jpg")) {
-            mediaPlayer.recheckImageList(images, getApplicationContext());
-        }
+        retrieveMusicReceiver.putExtra("musics", music);
+        broadcastManager.sendBroadcast(retrieveMusicReceiver);
     }
 
     private void retrieveMusicReference(File file) {
@@ -82,15 +63,8 @@ public class RetrieveMusicService extends IntentService {
                                 ) {
                             retrieveMusicReference(file1);
                         }
-                    } else if (fileType.contains(file1.getAbsolutePath().substring(file1.getAbsolutePath().length() - 4)) && !Objects.requireNonNull(file1.getParent()).contains("record") && file1.length() >= 500000) {
-                        String posFix = file1.getAbsolutePath().substring(file1.getAbsolutePath().length() - 4);
-                        if (posFix.equals(".mp3")) {
-                            musics.add(file1.getAbsolutePath());
-                        } else if (posFix.equals(".mp4")) {
-                            videos.add(file1.getAbsolutePath());
-                        } else if (posFix.equals(".jpg") || posFix.equals(".png") || posFix.equals("jpeg")) {
-                            images.add(file1.getAbsolutePath());
-                        }
+                    } else if (file1.getAbsolutePath().contains(".mp3") && !Objects.requireNonNull(file1.getParent()).contains("record") && file1.length() >= 500000) {
+                        musics.add(file1.getAbsolutePath());
                     }
                 }
 

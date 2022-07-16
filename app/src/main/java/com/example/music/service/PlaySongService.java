@@ -16,9 +16,11 @@ import android.support.v4.media.session.PlaybackStateCompat;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.core.graphics.drawable.IconCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.music.CurrentSongActivity;
 import com.example.music.GlobalMediaPlayer;
 import com.example.music.MainActivity;
 import com.example.music.MyApplication;
@@ -177,6 +179,11 @@ public class PlaySongService extends Service {
         androidx.media.app.NotificationCompat.MediaStyle mediaStyle = new androidx.media.app.NotificationCompat.MediaStyle();
         mediaStyle.setMediaSession(mediaSession.getSessionToken());
 
+        Intent intent = new Intent(getApplicationContext(), CurrentSongActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+        stackBuilder.addNextIntentWithParentStack(intent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(221, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
         songNotification = new NotificationCompat.Builder(this, MyApplication.PLAYING_SONG_CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setLargeIcon(currentSong.songImage)
@@ -186,6 +193,7 @@ public class PlaySongService extends Service {
                 .addAction(actionPlayPauseCompat)
                 .addAction(actionNextCompat)
                 .addAction(actionStopCompat)
+                .setContentIntent(pendingIntent)
                 .setStyle(mediaStyle).build();
 
         if (mediaPlayer.getPlayerState() == GlobalMediaPlayer.PLAYING_STATE) {
