@@ -76,7 +76,7 @@ public class ImageDb extends SQLiteOpenHelper {
     }
     public void removeImageFromTable(String path) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
-        sqLiteDatabase.execSQL("DELETE FROM '" + TABLE_NAME + "' WHERE path = '" + path);
+        sqLiteDatabase.execSQL("DELETE FROM '" + TABLE_NAME + "' WHERE path = '"+path+"'");
         sqLiteDatabase.close();
     }
 
